@@ -10,6 +10,5 @@
         <module name="kargobaji.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="23" />
   </component>
 </project>
