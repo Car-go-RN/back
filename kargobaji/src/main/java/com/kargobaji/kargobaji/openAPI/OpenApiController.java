@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,8 +20,11 @@ public class OpenApiController {
 
     // 공공데이터 호출
     @GetMapping
-    public ResponseEntity<?> fetch() throws UnsupportedEncodingException {
-        return ResponseEntity.ok(openApiManager.fetch().getBody());
+    public ResponseEntity<Map> fetch(
+            @RequestParam(name = "type", defaultValue = "BRAND") OpenApiType apiType,
+            @RequestParam(name = "pageNo", defaultValue = "1") int pageNo
+    ) throws UnsupportedEncodingException{
+        return openApiManager.fetch(apiType, pageNo);
     }
 
     // 공공데이터 DB 저장

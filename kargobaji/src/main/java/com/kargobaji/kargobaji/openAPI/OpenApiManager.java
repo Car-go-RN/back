@@ -1,8 +1,14 @@
 package com.kargobaji.kargobaji.openAPI;
 
 
+import com.kargobaji.kargobaji.openAPI.entity.RestAreaBrand;
+import com.kargobaji.kargobaji.openAPI.entity.RestAreaFacility;
+import com.kargobaji.kargobaji.openAPI.entity.RestAreaFood;
+import com.kargobaji.kargobaji.openAPI.repository.RestAreaBrandRepository;
+import com.kargobaji.kargobaji.openAPI.repository.RestAreaFacilityRepository;
+import com.kargobaji.kargobaji.openAPI.repository.RestAreaFoodRepository;
 import lombok.RequiredArgsConstructor;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.apache.coyote.Response;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -13,87 +19,109 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
 import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
 public class OpenApiManager {
-    private final RestAreaRepository restAreaRepository;
+    private final RestAreaBrandRepository restAreaBrandRepository;
+    private final RestAreaFacilityRepository restAreaFacilityRepository;
+    private final RestAreaFoodRepository restAreaFoodRepository;
+
 
     private String BASE_URL = "https://data.ex.co.kr/openapi/restinfo";
-
-    private String brand = "/restBrandList";
-    private String food = "/restBestfoodList";
-    private String facilities = "/restConvList";
 
     @Value("${open-api.key}")
     private String key;
 
     private String type = "&type=json";
     private String numOfRows = "&numOfRows=100";
-    private String pageNo = "&pageNo=1";
 
-    private String makeUrl() throws UnsupportedEncodingException {
+    private String makeUrl(OpenApiType apiType, int pageNo) throws UnsupportedEncodingException {
         return BASE_URL
-                + brand
+                + apiType.getEndpoint()
                 + key
                 + type
                 + numOfRows
-                + pageNo;
+                + "&pageNo=" + pageNo;
     }
 
     // 공공데이터 api 호출
-    public ResponseEntity<?> fetch() throws UnsupportedEncodingException {
-        System.out.println(makeUrl());
-        RestTemplate restTemplate = new RestTemplate(); // Http 요청에 대한 응답을 처리, json -> java 객체로 변환시키는 기능이 탑재되어 있음.
-        HttpEntity<?> entity = new HttpEntity<>(new HttpHeaders()); // 클라이언트 -> 서버로 보낼 요청 데이터를 담는 객체(header + body), 지금은 요청에 대한 header(부가 정보 ex) 인증)만 정보 담음.
-        ResponseEntity<Map> resultMap = restTemplate.exchange(makeUrl(), HttpMethod.GET, entity, Map.class); // Json응답을 Map 형태로 파싱.
-        System.out.println(resultMap.getBody());
+    public ResponseEntity<Map> fetch(OpenApiType apiType, int pageNo) throws UnsupportedEncodingException{
+        String url = makeUrl(apiType, pageNo);
+        System.out.println(url);
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<?> entity = new HttpEntity<>(new HttpHeaders());
+
+        ResponseEntity<Map> resultMap = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
         return resultMap;
     }
 
     // 외부 데이터 entity에 저장
     public void fetchAndSave() throws ParseException{
-        try{
-            RestTemplate restTemplate = new RestTemplate();
-            String jsonString = restTemplate.getForObject(makeUrl(), String.class);
+        for(OpenApiType apiType : OpenApiType.values()){
+            fetchAndSaveByType(apiType);
+        }
+    }
 
-            JSONParser parser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) parser.parse(jsonString);
-            JSONArray dataList = (JSONArray) jsonObject.get("list");
+    private void fetchAndSaveByType(OpenApiType apiType){
+        RestTemplate restTemplate = new RestTemplate();
+        JSONParser parser = new JSONParser();
 
-            for(Object o : dataList){
-                JSONObject item = (JSONObject) o;
+        for(int page=1; page<=apiType.getMaxPage(); page++){
+            try{
+                String jsonString = restTemplate.getForObject(makeUrl(apiType, page), String.class);
+                JSONObject jsonObject = (JSONObject) parser.parse(jsonString);
+                JSONArray dataList = (JSONArray) jsonObject.get("list");
 
-                RestArea restArea = new RestArea();
-                restArea.setStdRestNm((String) item.get("stdRestNm"));
+                for(Object o : dataList){
+                    JSONObject item = (JSONObject) o;
 
-                // brand
-                restArea.setBrdName((String) item.get("brdName"));
-                restArea.setStime((String) item.get("stime"));
-                restArea.setEtime((String) item.get("etime"));
+                    RestAreaBrand restAreaBrand = new RestAreaBrand();
+                    RestAreaFacility restAreaFacility = new RestAreaFacility();
+                    RestAreaFood restAreaFood = new RestAreaFood();
 
-                // food
-//                restArea.setFoodNm((String) item.get("foodNm"));
-//                restArea.setFoodCost((String) item.get("foodCost"));
-//
-                // facility
-//                restArea.setPsName((String) item.get("psName"));
+                    switch (apiType){
+                        case BRAND:
+                            if(item.get("stdRestNm") == null || item.get("brdName")==null){
+                                break;
+                            }
+                            restAreaBrand.setStdRestNm((String) item.get("stdRestNm"));
+                            restAreaBrand.setBrdName((String) item.get("brdName"));
+                            restAreaBrandRepository.save(restAreaBrand);
+                            break;
 
+                        case FOOD:
+                            if(item.get("stdRestNm")==null || item.get("foodNm")==null || item.get("foodCost")==null){
+                                break;
+                            }
+                            restAreaFood.setStdRestNm((String) item.get("stdRestNm"));
+                            restAreaFood.setFoodNm((String) item.get("foodNm"));
+                            restAreaFood.setFoodCost((String) item.get("foodCost"));
+                            restAreaFoodRepository.save(restAreaFood);
+                            break;
 
-                restAreaRepository.save(restArea);
+                        case FACILITIES:
+                            if(item.get("stdRestNm")==null || item.get("psName")==null){
+                                break;
+                            }
+                            restAreaFacility.setStdRestNm((String) item.get("stdRestNm"));
+                            restAreaFacility.setPsName((String) item.get("psName"));
+                            restAreaFacilityRepository.save(restAreaFacility);
+                            break;
+                    }
+                }
+            }
+            catch (Exception e){
+                System.out.println("[" + apiType.name() + "] 페이지" + page + "처리 중 에러" + e.getMessage());
             }
         }
-        catch (Exception e){
-            System.out.println("에러 발생 : " + e.getMessage());
-            e.printStackTrace();
-        }
+
     }
 
 }

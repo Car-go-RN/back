@@ -1,4 +1,4 @@
-package com.kargobaji.kargobaji.openAPI;
+package com.kargobaji.kargobaji.openAPI.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,22 +6,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-
 @Entity
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-@Table(name = "rest_area_brand")
-public class RestArea {
+@Table(name = "rest_area_facility")
+public class RestAreaFacility {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String brdName;
     private String stdRestNm;
-    private String stime;
-    private String etime;
+    private String psName;
+
 }
+
+
