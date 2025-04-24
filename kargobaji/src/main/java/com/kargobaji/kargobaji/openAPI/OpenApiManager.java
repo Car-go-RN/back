@@ -4,9 +4,11 @@ package com.kargobaji.kargobaji.openAPI;
 import com.kargobaji.kargobaji.openAPI.entity.RestAreaBrand;
 import com.kargobaji.kargobaji.openAPI.entity.RestAreaFacility;
 import com.kargobaji.kargobaji.openAPI.entity.RestAreaFood;
+import com.kargobaji.kargobaji.openAPI.entity.RestAreaGas;
 import com.kargobaji.kargobaji.openAPI.repository.RestAreaBrandRepository;
 import com.kargobaji.kargobaji.openAPI.repository.RestAreaFacilityRepository;
 import com.kargobaji.kargobaji.openAPI.repository.RestAreaFoodRepository;
+import com.kargobaji.kargobaji.openAPI.repository.RestAreaGasRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.json.simple.JSONArray;
@@ -31,9 +33,10 @@ public class OpenApiManager {
     private final RestAreaBrandRepository restAreaBrandRepository;
     private final RestAreaFacilityRepository restAreaFacilityRepository;
     private final RestAreaFoodRepository restAreaFoodRepository;
+    private final RestAreaGasRepository restAreaGasRepository;
 
 
-    private String BASE_URL = "https://data.ex.co.kr/openapi/restinfo";
+    private String BASE_URL = "https://data.ex.co.kr/openapi";
 
     @Value("${open-api.key}")
     private String key;
@@ -85,6 +88,7 @@ public class OpenApiManager {
                     RestAreaBrand restAreaBrand = new RestAreaBrand();
                     RestAreaFacility restAreaFacility = new RestAreaFacility();
                     RestAreaFood restAreaFood = new RestAreaFood();
+                    RestAreaGas restAreaGas = new RestAreaGas();
 
                     switch (apiType){
                         case BRAND:
@@ -114,6 +118,17 @@ public class OpenApiManager {
                             restAreaFacility.setPsName((String) item.get("psName"));
                             restAreaFacilityRepository.save(restAreaFacility);
                             break;
+
+                        case GAS:
+                            String srNm = item.get("serviceAreaName").toString();
+                            srNm.replace("주유소", "휴게소");
+                            restAreaGas.setStdRestNm(srNm);
+
+                            restAreaGas.setGasolinePrice((String) item.get("gasolinePrice"));
+                            restAreaGas.setDiselPrice((String) item.get("diselPrice"));
+                            restAreaGas.setLpgPrice((String) item.get("lpgPrice"));
+
+                            restAreaGasRepository.save(restAreaGas);
                     }
                 }
             }

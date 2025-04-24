@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8502b34a-314e-41ee-9995-880f30aad33f" name="변경" comment="[Feature] #2 - 공공데이터 DB에 저장&#10;&#10;변경 사항&#10;- Api 응답 데이터 DB 저장&#10;&#10;기타 참고 사항&#10;- 응답 데이터를 Api 각각 테이블을 만들어 받고 있는 형식임.&#10;- 첫페이지의 데이터만 받고 있는 상태.&#10;   - 시설 : 13페이지&#10;   - 음식 : 68페이지&#10;   - 브랜드 : 7패이지&#10;&#10;- 관련 이슈: #1">
+      <change afterPath="$PROJECT_DIR$/kargobaji/src/main/java/com/kargobaji/kargobaji/openAPI/OpenApiType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kargobaji/src/main/java/com/kargobaji/kargobaji/openAPI/entity/RestAreaFacility.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kargobaji/src/main/java/com/kargobaji/kargobaji/openAPI/entity/RestAreaFood.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kargobaji/src/main/java/com/kargobaji/kargobaji/openAPI/repository/RestAreaFacilityRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kargobaji/src/main/java/com/kargobaji/kargobaji/openAPI/repository/RestAreaFoodRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kargobaji/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kargobaji/src/main/java/com/kargobaji/kargobaji/openAPI/OpenApiController.java" beforeDir="false" afterPath="$PROJECT_DIR$/kargobaji/src/main/java/com/kargobaji/kargobaji/openAPI/OpenApiController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kargobaji/src/main/java/com/kargobaji/kargobaji/openAPI/OpenApiManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/kargobaji/src/main/java/com/kargobaji/kargobaji/openAPI/OpenApiManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kargobaji/src/main/java/com/kargobaji/kargobaji/openAPI/RestArea.java" beforeDir="false" afterPath="$PROJECT_DIR$/kargobaji/src/main/java/com/kargobaji/kargobaji/openAPI/entity/RestAreaBrand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kargobaji/src/main/java/com/kargobaji/kargobaji/openAPI/RestAreaDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kargobaji/src/main/java/com/kargobaji/kargobaji/openAPI/RestAreaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/kargobaji/src/main/java/com/kargobaji/kargobaji/openAPI/repository/RestAreaBrandRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kargobaji/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/kargobaji/src/main/resources/application.properties" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$/kargobaji">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="kargobaji" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+        <option value="Interface" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="dev" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;myj456&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Car-go-RN/back&quot;,
+    &quot;accountId&quot;: &quot;f8fb6b36-5f09-43f1-b0eb-04087bcd8f15&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="2ve3mYw5vku4jb2dgI4aJVrmrAX" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.kargobaji [:com.kargobaji.kargobaji.KargobajiApplication.main()].executor": "Run",
+    "Gradle.소스 다운로드.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "featuer/1-openAPI__db__save",
+    "kotlin-language-version-configured": "true",
+    "project.structure.last.edited": "프로젝트",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="KargobajiApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.kargobaji.kargobaji.KargobajiApplication" />
+      <module name="kargobaji.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.kargobaji.kargobaji.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="애플리케이션.KargobajiApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="애플리케이션 수준" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="디폴트 작업">
+      <changelist id="8502b34a-314e-41ee-9995-880f30aad33f" name="변경" comment="" />
+      <created>1744491872003</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1744491872003</updated>
+    </task>
+    <task id="LOCAL-00001" summary="백엔드 기본 서버입니다.">
+      <option name="closed" value="true" />
+      <created>1744550860585</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1744550860585</updated>
+    </task>
+    <task id="LOCAL-00002" summary="[Feature] #1 - 공공데이터 DB에 저장&#10;&#10;변경 사항&#10;- 공공데이터 API 호출&#10;&#10;기타 참고 사항&#10;&#10;- 관련 이슈: #1">
+      <option name="closed" value="true" />
+      <created>1744782197256</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1744782197256</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="백엔드 기본 서버입니다." />
+    <MESSAGE value="[Feature] #1 - 공공데이터 DB에 저장&#10;&#10;변경 사항&#10;- 공공데이터 API 호출&#10;&#10;기타 참고 사항&#10;&#10;- 관련 이슈: #1" />
+    <option name="LAST_COMMIT_MESSAGE" value="[Feature] #1 - 공공데이터 DB에 저장&#10;&#10;변경 사항&#10;- 공공데이터 API 호출&#10;&#10;기타 참고 사항&#10;&#10;- 관련 이슈: #1" />
+  </component>
+</project>

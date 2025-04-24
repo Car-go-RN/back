@@ -4,9 +4,10 @@ import lombok.Getter;
 
 @Getter
 public enum OpenApiType{
-    BRAND("/restBrandList", 7),
-    FOOD("/restBestfoodList", 68),
-    FACILITIES("/restConvList", 13);
+    BRAND("/restinfo/restBrandList", 7),
+    FOOD("/restinfo/restBestfoodList", 68),
+    FACILITIES("/restinfo/restConvList", 13),
+    GAS("/business/curStateStation", 3);
 
     private final String endpoint;
     private final int maxPage;
