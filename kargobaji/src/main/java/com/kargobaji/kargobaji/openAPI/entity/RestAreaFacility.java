@@ -19,7 +19,6 @@ public class RestAreaFacility {
 
     private String stdRestNm;
     private String psName;
-
 }
 
 
