@@ -1,9 +1,6 @@
 package com.kargobaji.kargobaji.openAPI.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Table(name = "rest_area_gas")
 public class RestAreaGas {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

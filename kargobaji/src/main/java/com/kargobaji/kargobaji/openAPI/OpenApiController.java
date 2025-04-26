@@ -1,10 +1,9 @@
 package com.kargobaji.kargobaji.openAPI;
 
 
+import com.kargobaji.kargobaji.openAPI.entity.RestAreaBrand;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.json.simple.parser.ParseException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,6 +32,8 @@ public class OpenApiController {
             openApiManager.fetchAndSave();
             return ResponseEntity.ok("데이터가 성공적으로 저장되었습니다.");
     }
+
+
 }
 
 
