@@ -23,7 +23,7 @@ public class SecurityConfig {
                         authorize -> authorize
                                 .requestMatchers("/open-api").permitAll()
                                 .requestMatchers("/open-api/sync").permitAll()
-                                .requestMatchers("/open-csv").permitAll()
+                                .requestMatchers("/open-api/{table}").permitAll()
                                 .anyRequest().authenticated() // 나머지 모든 요청은 인증된 사용자만 접근 가능.
                         );
         return http.build();

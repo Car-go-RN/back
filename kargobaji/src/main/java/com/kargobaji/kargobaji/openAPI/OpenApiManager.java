@@ -23,7 +23,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.lang.reflect.Field;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -59,8 +61,7 @@ public class OpenApiManager {
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<?> entity = new HttpEntity<>(new HttpHeaders());
 
-        ResponseEntity<Map> resultMap = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
-        return resultMap;
+        return restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
     }
 
     // 외부 데이터 entity에 저장
@@ -199,7 +200,7 @@ public class OpenApiManager {
         }
     }
 
-    // 기름
+    // 주유소
     private void syncGases() {
         restAreaGasRepository.deleteAll();
 
@@ -226,6 +227,7 @@ public class OpenApiManager {
         }
     }
 
+    // 데이터 조회
     private JSONArray fetchList(OpenApiType apiType, int page){
         try{
             RestTemplate restTemplate = new RestTemplate();
@@ -237,5 +239,98 @@ public class OpenApiManager {
             System.out.println("[" + apiType.name() + "] 페이지" + page + " 에러: " + e.getMessage());
             return null;
         }
+    }
+
+    // 데이터 가져오기
+    public List<Map<String, Object>> getData(
+            String table,
+            List<String> fields,
+            Map<String, String> filters,
+            Integer limit
+    ){
+        List<?> entities = findEntitiesByTable(table);
+
+        if(filters != null){
+            filters.remove("field");
+            filters.remove("limit");
+        }
+
+        entities = applyFilters(entities, filters);
+
+        if(limit!=null && limit>0 && limit<entities.size()){
+            entities = entities.subList(0, limit);
+        }
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for(Object entity : entities){
+            result.add(extractFields(entity, fields));
+        }
+
+        return result;
+    }
+
+    // 테이블 데이터 조회
+    private List<?> findEntitiesByTable(String table) {
+        return switch (table.toLowerCase()) {
+            case "brand" -> restAreaBrandRepository.findAll();
+            case "facility" -> restAreaFacilityRepository.findAll();
+            case "food" -> restAreaFoodRepository.findAll();
+            case "gas" -> restAreaGasRepository.findAll();
+            default -> throw new IllegalArgumentException("테이블이 존재하지 않습니다. " + table);
+        };
+    }
+
+    // 필터링 적용
+    private List<?> applyFilters(List<?> entities, Map<String, String> filters) {
+        if (filters == null || filters.isEmpty()) return entities;
+
+        return entities.stream()
+                .filter(entity -> {
+                    for (String key : filters.keySet()) {
+                        String value = filters.get(key);
+                        try {
+                            Field field = entity.getClass().getDeclaredField(key);
+                            field.setAccessible(true);
+                            Object fieldValue = field.get(entity);
+                            if (fieldValue == null || !fieldValue.toString().contains(value)) {
+                                return false;
+                            }
+                        } catch (Exception e) {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+                .collect(Collectors.toList());
+    }
+
+    // 필요한 필드만 추출
+    private Map<String, Object> extractFields(Object entity, List<String> fields){
+        Map<String, Object> map = new HashMap<>();
+        if(fields == null || fields.isEmpty()){
+            for(Field field : entity.getClass().getDeclaredFields()){
+                try{
+                    field.setAccessible(true);
+                    map.put(field.getName(), field.get(entity));
+                }
+                catch (IllegalAccessException e){
+                    // 무시
+                }
+            }
+        }
+        else {
+            for(String fieldName : fields){
+                try{
+                    Field field = entity.getClass().getDeclaredField(fieldName);
+                    field.setAccessible(true);
+                    map.put(fieldName, field.get(entity));
+                }
+                catch (Exception e){
+                    // 없는 필드 무시
+                }
+            }
+        }
+
+        return map;
     }
 }
