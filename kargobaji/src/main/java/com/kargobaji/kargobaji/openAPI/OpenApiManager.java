@@ -44,7 +44,7 @@ public class OpenApiManager {
     private String type = "&type=json";
     private String numOfRows = "&numOfRows=100";
 
-    private String makeUrl(OpenApiType apiType, int pageNo) {
+    private String makeUrl(OpenApiType apiType, int pageNo) { // api 요청에 사용할 URL
         return BASE_URL
                 + apiType.getEndpoint()
                 + key
@@ -58,13 +58,17 @@ public class OpenApiManager {
         String url = makeUrl(apiType, pageNo);
         System.out.println(url);
 
-        RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<?> entity = new HttpEntity<>(new HttpHeaders());
+        RestTemplate restTemplate = new RestTemplate(); // RestTemplate 정의
+        HttpEntity<?> entity = new HttpEntity<>(new HttpHeaders()); // 요청 header 정의
 
+        // Url에 Get으로 header와 함께 요청을 보내서 응답 데이터를 Map으로 받음.
+        // exchange는 HTTP 요청을 한 후 서버의 응답을 받아오는 역할 임.
         return restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
     }
 
-    // 외부 데이터 entity에 저장
+    // 외부 데이터 DB에 저장
+    // brand, facility, food는 업서트 방식
+    // gas는 전체 삭제 후 데이터 재대입
     public void fetchAndSave(){
         syncMonthlyData();
         syncWeeklyData();
@@ -86,17 +90,23 @@ public class OpenApiManager {
 
     // 브랜드
     private void syncBrands() {
+
         Set<String> existingKeys = new HashSet<>();
 
-        for(int page=1; page<=OpenApiType.BRAND.getMaxPage(); page++){
-            JSONArray list = fetchList(OpenApiType.BRAND, page);
+        for(int page=1; page<=OpenApiType.BRAND.getMaxPage(); page++){ // BRAND의 마지막 페이지까지 반복
+            JSONArray list = fetchList(OpenApiType.BRAND, page); // BRAND 데이터를 가져옴.
+            // null 확인
             if(list == null) continue;
 
+            //
             for(Object obj : list){
-                JSONObject item = (JSONObject) obj;
-                String stdRestNm = (String) item.get("stdRestNm");
-                String brdName = (String) item.get("brdName");
+                JSONObject item = (JSONObject) obj; // obj(Object 타입)을 JSONObject로 캐스팅(데이터 형 변환)
 
+                //String으로 캐스팅하는 이유? : 자바는 강타입 언어, 즉 명확한 변수의 타입을 정의해야 됨. 하지만 Object는 명확하지 않기 때문에 String으로 캐스팅을 함.
+                String stdRestNm = (String) item.get("stdRestNm"); // obj에서 "stdRestNm" 값을 string 캐스팅
+                String brdName = (String) item.get("brdName"); // obj에서 "brdName" 값을 string 캐스팅
+
+                // null 확인
                 if(stdRestNm == null || brdName == null) continue;
 
                 existingKeys.add(stdRestNm + brdName);
@@ -113,9 +123,10 @@ public class OpenApiManager {
                 }
             }
         }
-        
+
         List<RestAreaBrand> all = restAreaBrandRepository.findAll();
         for(RestAreaBrand b : all){
+            // api 응답 데이터가 없을 시 해당 DB 데이터 행을 삭제 함.
             if(!existingKeys.contains(b.getStdRestNm() + b.getBrdName())){
                 restAreaBrandRepository.delete(b);
             }
@@ -202,6 +213,7 @@ public class OpenApiManager {
 
     // 주유소
     private void syncGases() {
+        // 전체 삭제
         restAreaGasRepository.deleteAll();
 
         for(int page=1; page<=OpenApiType.GAS.getMaxPage(); page++){
@@ -231,8 +243,12 @@ public class OpenApiManager {
     private JSONArray fetchList(OpenApiType apiType, int page){
         try{
             RestTemplate restTemplate = new RestTemplate();
-            String jsonString = restTemplate.getForObject(makeUrl(apiType, page), String.class);
+            String jsonString = restTemplate.getForObject(makeUrl(apiType, page), String.class); //apiType과 page로 만든 URL에 GET 요청을 보내고 String으로 응답을 받음.
+            // 응답 데이터(JSON 문자열)를 JSON 객체로 파싱
+            // parse : 문자열을 객체로 변환하는 메서드
             JSONObject jsonObject = (JSONObject) new JSONParser().parse(jsonString);
+            // list 라는 키에 해당하는 JSONArray를 꺼내고 리턴
+            // 왜 JSONArray이냐? -> list가 배열 형태임. list[데이터값들]
             return (JSONArray) jsonObject.get("list");
         }
         catch(Exception e){
@@ -243,11 +259,13 @@ public class OpenApiManager {
 
     // 데이터 가져오기
     public List<Map<String, Object>> getData(
+            // 파라미터 값 저장
             String table,
             List<String> fields,
             Map<String, String> filters,
             Integer limit
     ){
+
         List<?> entities = findEntitiesByTable(table);
 
         if(filters != null){
@@ -269,7 +287,7 @@ public class OpenApiManager {
         return result;
     }
 
-    // 테이블 데이터 조회
+    // 해당 되는 테이블 엔티티를 조회
     private List<?> findEntitiesByTable(String table) {
         return switch (table.toLowerCase()) {
             case "brand" -> restAreaBrandRepository.findAll();
@@ -282,16 +300,22 @@ public class OpenApiManager {
 
     // 필터링 적용
     private List<?> applyFilters(List<?> entities, Map<String, String> filters) {
+        // 필터링할 내용이 있는지 확인
         if (filters == null || filters.isEmpty()) return entities;
 
+        // stream : 컬렉션(리스트, 배열 등)에서 데이터의 흐름(데이터의 상호작용 과정)을 처리
         return entities.stream()
                 .filter(entity -> {
                     for (String key : filters.keySet()) {
                         String value = filters.get(key);
                         try {
+                            // 리플렉션을 사용하여 동적으로 클래스에 필드(key)에 접근
+                            // 리플렉션 : 동적으로 객체 조작/클래스 정보를 얻는 기능 등을 제공 -> .getClass(), .getDeclaredField()
+                            // .getClass() : 실제 클래스의 정보를 확인(클래스에 정의된 필드 메서드 접근 할 때 사용)
+                            // .getDeclaredField() : 클래스의 특정 필드에 대한 정보를 동적으로 가져오는 메소드 (접근 제어자(public, private, protected) 영향 없음)
                             Field field = entity.getClass().getDeclaredField(key);
-                            field.setAccessible(true);
-                            Object fieldValue = field.get(entity);
+                            field.setAccessible(true); // 해당 메소드가 private이기 때문에 field에게 접근 권한을 줌.
+                            Object fieldValue = field.get(entity); // 해당 필드 값을 동적으로 가져옴.
                             if (fieldValue == null || !fieldValue.toString().contains(value)) {
                                 return false;
                             }
@@ -301,29 +325,32 @@ public class OpenApiManager {
                     }
                     return true;
                 })
+                // collect: 결과를 컬렉션으로 변한 (리스트로 변환)
                 .collect(Collectors.toList());
     }
 
-    // 필요한 필드만 추출
-    private Map<String, Object> extractFields(Object entity, List<String> fields){
-        Map<String, Object> map = new HashMap<>();
+    // 조회
+    private Map<String, Object> extractFields(Object entity, List<String> fields){ // entity : 필드 값을 추출할 객체, fields : 파라미터에서 받아온 필드 이름
+        Map<String, Object> map = new HashMap<>(); // 필드 값을 저장 (필드이름 : 필드값)
+
+        // 전체 추출
         if(fields == null || fields.isEmpty()){
-            for(Field field : entity.getClass().getDeclaredFields()){
+            for(Field field : entity.getClass().getDeclaredFields()){ // 지정된 필드(null 이 아닌 필드)만큼 반복 및 필드 값을 가져옴.
                 try{
-                    field.setAccessible(true);
-                    map.put(field.getName(), field.get(entity));
+                    field.setAccessible(true); // 필드에게 접근 권한을 줌.
+                    map.put(field.getName(), field.get(entity)); // map에 필드 이름과 값을 저장
                 }
                 catch (IllegalAccessException e){
                     // 무시
                 }
             }
         }
-        else {
+        else { // 특정 필드만 추출
             for(String fieldName : fields){
                 try{
-                    Field field = entity.getClass().getDeclaredField(fieldName);
-                    field.setAccessible(true);
-                    map.put(fieldName, field.get(entity));
+                    Field field = entity.getClass().getDeclaredField(fieldName); // 특정 필드 이름의 값을 가져옴.
+                    field.setAccessible(true); // 필드에게 접근 권한을 줌.
+                    map.put(fieldName, field.get(entity)); // 가져온 데이터를 map에 넣음.
                 }
                 catch (Exception e){
                     // 없는 필드 무시
