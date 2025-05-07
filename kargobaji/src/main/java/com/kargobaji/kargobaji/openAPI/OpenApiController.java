@@ -18,8 +18,8 @@ public class OpenApiController {
     // 공공데이터 호출
     @GetMapping
     public ResponseEntity<Map> fetch(
-            @RequestParam(name = "type", defaultValue = "BRAND") OpenApiType apiType,
-            @RequestParam(name = "pageNo", defaultValue = "1") int pageNo
+            @RequestParam(name = "type", defaultValue = "BRAND") OpenApiType apiType, // 가져올 데이터 종류
+            @RequestParam(name = "pageNo", defaultValue = "1") int pageNo // 페이지 번호
     ) throws UnsupportedEncodingException{
         return openApiManager.fetch(apiType, pageNo);
     }
