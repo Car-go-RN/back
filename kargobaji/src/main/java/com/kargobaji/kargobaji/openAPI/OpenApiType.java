@@ -7,7 +7,8 @@ public enum OpenApiType{
     BRAND("/restinfo/restBrandList", 7),
     FOOD("/restinfo/restBestfoodList", 68),
     FACILITIES("/restinfo/restConvList", 13),
-    GAS("/business/curStateStation", 3);
+    GAS("/business/curStateStation", 3),
+    LOCAL("/locationinfo/locationinfoRest", 3);
 
     private final String endpoint;
     private final int maxPage;

@@ -1,14 +1,8 @@
 package com.kargobaji.kargobaji.openAPI;
 
 
-import com.kargobaji.kargobaji.openAPI.entity.RestAreaBrand;
-import com.kargobaji.kargobaji.openAPI.entity.RestAreaFacility;
-import com.kargobaji.kargobaji.openAPI.entity.RestAreaFood;
-import com.kargobaji.kargobaji.openAPI.entity.RestAreaGas;
-import com.kargobaji.kargobaji.openAPI.repository.RestAreaBrandRepository;
-import com.kargobaji.kargobaji.openAPI.repository.RestAreaFacilityRepository;
-import com.kargobaji.kargobaji.openAPI.repository.RestAreaFoodRepository;
-import com.kargobaji.kargobaji.openAPI.repository.RestAreaGasRepository;
+import com.kargobaji.kargobaji.openAPI.entity.*;
+import com.kargobaji.kargobaji.openAPI.repository.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
@@ -35,6 +29,7 @@ public class OpenApiManager {
     private final RestAreaFacilityRepository restAreaFacilityRepository;
     private final RestAreaFoodRepository restAreaFoodRepository;
     private final RestAreaGasRepository restAreaGasRepository;
+    private final RestAreaLocalRepository restAreaLocalRepository;
 
     private String BASE_URL = "https://data.ex.co.kr/openapi";
 
@@ -80,12 +75,59 @@ public class OpenApiManager {
         syncBrands();
         syncFacilities();
         syncFoods();
+        syncLocal();
     }
 
     // 매주 월요일마다 gas 데이터 업데이트
     @Scheduled(cron = "0 0 4 * * Mon")
     public void syncWeeklyData(){
         syncGases();
+    }
+
+    // 위치
+    private void syncLocal(){
+        Set<String> existingKeys = new HashSet<>();
+
+        for(int page=1; page<=OpenApiType.LOCAL.getMaxPage(); page++){
+            JSONArray list = fetchList(OpenApiType.LOCAL, page); // LOCAL에서 데이터를 가져옴.
+
+            for(Object obj : list){
+                JSONObject item = (JSONObject) obj; // 데이터를 JSONObject로 캐스팅
+
+                if(item == null) continue;
+
+                String stdRestNm = (String) item.get("unitName");
+                String latitude = (String) item.get("xValue"); // 위도
+                String longitude = (String) item.get("yValue"); // 경도
+
+                if(stdRestNm == null || latitude == null || longitude == null) continue;
+
+                existingKeys.add(stdRestNm + latitude + longitude);
+
+                RestAreaLocal existing = restAreaLocalRepository.findByStdRestNm(stdRestNm);
+                if(existing == null){
+                    restAreaLocalRepository.save(
+                            RestAreaLocal.builder()
+                                    .stdRestNm(stdRestNm)
+                                    .latitude(latitude)
+                                    .longitude(longitude)
+                                    .build()
+                    );
+                }
+                else if(!existing.getLatitude().equals(latitude) || !existing.getLongitude().equals(longitude)){
+                    existing.setLatitude(latitude);
+                    existing.setLongitude(longitude);
+                    restAreaLocalRepository.save(existing);
+                }
+            }
+        }
+        List<RestAreaLocal> all = restAreaLocalRepository.findAll();
+        for(RestAreaLocal l : all){
+            String key = l.getStdRestNm() + l.getLatitude() + l.getLongitude();
+            if(!existingKeys.contains(key)){
+                restAreaLocalRepository.delete(l);
+            }
+        }
     }
 
     // 브랜드
@@ -125,9 +167,9 @@ public class OpenApiManager {
         }
 
         List<RestAreaBrand> all = restAreaBrandRepository.findAll();
-        for(RestAreaBrand b : all){
+        for(RestAreaBrand b : all) {
             // api 응답 데이터가 없을 시 해당 DB 데이터 행을 삭제 함.
-            if(!existingKeys.contains(b.getStdRestNm() + b.getBrdName())){
+            if (!existingKeys.contains(b.getStdRestNm() + b.getBrdName())) {
                 restAreaBrandRepository.delete(b);
             }
         }
@@ -294,6 +336,7 @@ public class OpenApiManager {
             case "facility" -> restAreaFacilityRepository.findAll();
             case "food" -> restAreaFoodRepository.findAll();
             case "gas" -> restAreaGasRepository.findAll();
+            case "local" -> restAreaLocalRepository.findAll();
             default -> throw new IllegalArgumentException("테이블이 존재하지 않습니다. " + table);
         };
     }
