@@ -402,4 +402,39 @@ public class OpenApiManager {
         }
         return map;
     }
+
+    // 모든 데이터 통합 조회
+    public List<RestAreaInfo> getAllRestAreaInfo(){
+        List<RestAreaLocal> locals = restAreaLocalRepository.findAll();
+
+        List<RestAreaInfo> result = new ArrayList<>();
+
+        for(RestAreaLocal local : locals){
+            String stdRestNm = local.getStdRestNm();
+
+            List<RestAreaBrand> brands = restAreaBrandRepository.findByStdRestNm(stdRestNm);
+            List<RestAreaFacility> facilities = restAreaFacilityRepository.findByStdRestNm(stdRestNm);
+            List<RestAreaFood> foods = restAreaFoodRepository.findByStdRestNm(stdRestNm);
+            RestAreaGas restAreaGas = restAreaGasRepository.findByStdRestNm(stdRestNm);
+
+            RestAreaInfo info = RestAreaInfo.builder()
+                    .stdRestNm(stdRestNm)
+                    .latitude(local.getLatitude())
+                    .longitude(local.getLongitude())
+                    .brands(brands.stream().map(RestAreaBrand::getBrdName).toList())
+                    .facilities(facilities.stream().map(RestAreaFacility::getPsName).toList())
+                    .gasolinePrice(restAreaGas != null ? restAreaGas.getGasolinePrice() : null)
+                    .diselPrice(restAreaGas != null ? restAreaGas.getDiselPrice() : null)
+                    .lpgPrice(restAreaGas != null ? restAreaGas.getLpgPrice() : null)
+                    .menus(
+                            foods.stream().map(
+                                    f -> RestAreaInfo.MenuInfo.builder()
+                                            .foodCost(f.getFoodCost())
+                                            .foodNm(f.getFoodNm())
+                                            .build()).toList()
+                            ).build();
+            result.add(info);
+        }
+        return result;
+    }
 }

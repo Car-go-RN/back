@@ -21,4 +21,9 @@ public class RestAreaGas {
     private String gasolinePrice; //휘발유
     private String diselPrice; // 경유
     private String lpgPrice; // LPG
+
+    private String roadAddress;
+    private String phone;
+    private Double latitude; // 위도 (y)
+    private Double longitude; // 경도 (x)
 }

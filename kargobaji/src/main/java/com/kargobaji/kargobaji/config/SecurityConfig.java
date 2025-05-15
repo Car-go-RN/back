@@ -21,9 +21,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 보안 설정 off
                 .authorizeHttpRequests( // HTTP 요청에 대한 인가 설정
                         authorize -> authorize
-                                .requestMatchers("/open-api").permitAll()
-                                .requestMatchers("/open-api/sync").permitAll()
-                                .requestMatchers("/open-api/{table}").permitAll()
+                                .requestMatchers("/open-api/**").permitAll()
                                 .anyRequest().authenticated() // 나머지 모든 요청은 인증된 사용자만 접근 가능.
                         );
         return http.build();
