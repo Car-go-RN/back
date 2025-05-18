@@ -1,12 +1,10 @@
 package com.kargobaji.kargobaji.openAPI;
 
-import com.kargobaji.kargobaji.openAPI.entity.RestAreaInfo;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
@@ -23,13 +21,6 @@ public class OpenApiController {
             @RequestParam(name = "pageNo", defaultValue = "1") int pageNo // 페이지 번호
     ) {
         return openApiManager.fetch(apiType, pageNo);
-    }
-
-    // 데이터 통합
-    @GetMapping("/info")
-    public ResponseEntity<List<RestAreaInfo>> getRestAreaInfo(){
-        List<RestAreaInfo> data = openApiManager.getAllRestAreaInfo();
-        return ResponseEntity.ok(data);
     }
 
     // 공공데이터 DB 저장

@@ -28,8 +28,7 @@ public class OpenApiManager {
     private final RestAreaBrandRepository restAreaBrandRepository;
     private final RestAreaFacilityRepository restAreaFacilityRepository;
     private final RestAreaFoodRepository restAreaFoodRepository;
-    private final RestAreaGasRepository restAreaGasRepository;
-    private final RestAreaLocalRepository restAreaLocalRepository;
+    private final RestAreaRepository restAreaRepository;
 
     private String BASE_URL = "https://data.ex.co.kr/openapi";
 
@@ -75,7 +74,6 @@ public class OpenApiManager {
         syncBrands();
         syncFacilities();
         syncFoods();
-        syncLocal();
     }
 
     // 매주 월요일마다 gas 데이터 업데이트
@@ -84,51 +82,6 @@ public class OpenApiManager {
         syncGases();
     }
 
-    // 위치
-    private void syncLocal(){
-        Set<String> existingKeys = new HashSet<>();
-
-        for(int page=1; page<=OpenApiType.LOCAL.getMaxPage(); page++){
-            JSONArray list = fetchList(OpenApiType.LOCAL, page); // LOCAL에서 데이터를 가져옴.
-
-            for(Object obj : list){
-                JSONObject item = (JSONObject) obj; // 데이터를 JSONObject로 캐스팅
-
-                if(item == null) continue;
-
-                String stdRestNm = (String) item.get("unitName");
-                String latitude = (String) item.get("xValue"); // 위도
-                String longitude = (String) item.get("yValue"); // 경도
-
-                if(stdRestNm == null || latitude == null || longitude == null) continue;
-
-                existingKeys.add(stdRestNm + latitude + longitude);
-
-                RestAreaLocal existing = restAreaLocalRepository.findByStdRestNm(stdRestNm);
-                if(existing == null){
-                    restAreaLocalRepository.save(
-                            RestAreaLocal.builder()
-                                    .stdRestNm(stdRestNm)
-                                    .latitude(latitude)
-                                    .longitude(longitude)
-                                    .build()
-                    );
-                }
-                else if(!existing.getLatitude().equals(latitude) || !existing.getLongitude().equals(longitude)){
-                    existing.setLatitude(latitude);
-                    existing.setLongitude(longitude);
-                    restAreaLocalRepository.save(existing);
-                }
-            }
-        }
-        List<RestAreaLocal> all = restAreaLocalRepository.findAll();
-        for(RestAreaLocal l : all){
-            String key = l.getStdRestNm() + l.getLatitude() + l.getLongitude();
-            if(!existingKeys.contains(key)){
-                restAreaLocalRepository.delete(l);
-            }
-        }
-    }
 
     // 브랜드
     private void syncBrands() {
@@ -256,7 +209,7 @@ public class OpenApiManager {
     // 주유소
     private void syncGases() {
         // 전체 삭제
-        restAreaGasRepository.deleteAll();
+        restAreaRepository.deleteAll();
 
         for(int page=1; page<=OpenApiType.GAS.getMaxPage(); page++){
             JSONArray list = fetchList(OpenApiType.GAS, page);
@@ -269,8 +222,8 @@ public class OpenApiManager {
                 String disel = (String) item.get("diselPrice");
                 String lpg = (String) item.get("lpgPrice");
 
-                restAreaGasRepository.save(
-                        RestAreaGas.builder()
+                restAreaRepository.save(
+                        RestArea.builder()
                                 .gasolinePrice(gasoline)
                                 .diselPrice(disel)
                                 .lpgPrice(lpg)
@@ -335,8 +288,7 @@ public class OpenApiManager {
             case "brand" -> restAreaBrandRepository.findAll();
             case "facility" -> restAreaFacilityRepository.findAll();
             case "food" -> restAreaFoodRepository.findAll();
-            case "gas" -> restAreaGasRepository.findAll();
-            case "local" -> restAreaLocalRepository.findAll();
+            case "gas" -> restAreaRepository.findAll();
             default -> throw new IllegalArgumentException("테이블이 존재하지 않습니다. " + table);
         };
     }
@@ -401,40 +353,5 @@ public class OpenApiManager {
             }
         }
         return map;
-    }
-
-    // 모든 데이터 통합 조회
-    public List<RestAreaInfo> getAllRestAreaInfo(){
-        List<RestAreaLocal> locals = restAreaLocalRepository.findAll();
-
-        List<RestAreaInfo> result = new ArrayList<>();
-
-        for(RestAreaLocal local : locals){
-            String stdRestNm = local.getStdRestNm();
-
-            List<RestAreaBrand> brands = restAreaBrandRepository.findByStdRestNm(stdRestNm);
-            List<RestAreaFacility> facilities = restAreaFacilityRepository.findByStdRestNm(stdRestNm);
-            List<RestAreaFood> foods = restAreaFoodRepository.findByStdRestNm(stdRestNm);
-            RestAreaGas restAreaGas = restAreaGasRepository.findByStdRestNm(stdRestNm);
-
-            RestAreaInfo info = RestAreaInfo.builder()
-                    .stdRestNm(stdRestNm)
-                    .latitude(local.getLatitude())
-                    .longitude(local.getLongitude())
-                    .brands(brands.stream().map(RestAreaBrand::getBrdName).toList())
-                    .facilities(facilities.stream().map(RestAreaFacility::getPsName).toList())
-                    .gasolinePrice(restAreaGas != null ? restAreaGas.getGasolinePrice() : null)
-                    .diselPrice(restAreaGas != null ? restAreaGas.getDiselPrice() : null)
-                    .lpgPrice(restAreaGas != null ? restAreaGas.getLpgPrice() : null)
-                    .menus(
-                            foods.stream().map(
-                                    f -> RestAreaInfo.MenuInfo.builder()
-                                            .foodCost(f.getFoodCost())
-                                            .foodNm(f.getFoodNm())
-                                            .build()).toList()
-                            ).build();
-            result.add(info);
-        }
-        return result;
     }
 }

@@ -2,8 +2,8 @@ package com.kargobaji.kargobaji.local.Address;
 
 import com.kargobaji.kargobaji.config.NotFoundException;
 import com.kargobaji.kargobaji.local.Address.dto.KakaoPlaceResponse;
-import com.kargobaji.kargobaji.openAPI.entity.RestAreaGas;
-import com.kargobaji.kargobaji.openAPI.repository.RestAreaGasRepository;
+import com.kargobaji.kargobaji.openAPI.entity.RestArea;
+import com.kargobaji.kargobaji.openAPI.repository.RestAreaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +18,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class RestAreaLocationService {
 
-    private final RestAreaGasRepository restAreaGasRepository;
+    private final RestAreaRepository restAreaRepository;
 
     @Value("${kakao-rest-api}")
     private String restApi;
@@ -29,21 +29,21 @@ public class RestAreaLocationService {
         if(webClient == null){
             webClient = WebClient.builder()
                     .baseUrl("https://dapi.kakao.com")
-                    .defaultHeader(HttpHeaders.AUTHORIZATION, "KakaoAK " + restApi)
+                    .defaultHeader(HttpHeaders.AUTHORIZATION, "KakaoAK " + restApi) // kakao rest api 권한 인증하기 위해 header에 전달함.
                     .build();
         }
         return webClient;
     }
 
-    public List<KakaoPlaceResponse.Document> getAllPlacesInfo(){
-        List<RestAreaGas> restAreaGasList = restAreaGasRepository.findAll();
+    // stdRestNm이 포함된 장소 정보 조회
+    public List<KakaoPlaceResponse.Document> getAllPlacesInfo() {
+        List<RestArea> restAreaList = restAreaRepository.findAll();
 
-        return restAreaGasList.stream()
-                .map(restAreaGas ->{
-                    try{
-                        return getPlaceInfo(restAreaGas.getStdRestNm());
-                    }
-                    catch(NotFoundException e){
+        return restAreaList.stream()
+                .map(restArea -> {
+                    try {
+                        return getPlaceInfo(restArea.getStdRestNm());
+                    } catch (NotFoundException e) {
                         return null;
                     }
                 })
@@ -51,31 +51,84 @@ public class RestAreaLocationService {
                 .collect(Collectors.toList());
     }
 
+    // 조회된 데이터 저장(위도, 경도, 연락처)
+    public void updateAllRestAreaLocationInfo(){
+        List<RestArea> restAreaList = restAreaRepository.findAll();
+
+        for(RestArea restArea : restAreaList){
+            try{
+                KakaoPlaceResponse.Document placeInfo = getPlaceInfo(restArea.getStdRestNm());
+
+                // 값이 있을 경우에 업데이트
+                restArea.setLatitude(Double.parseDouble(placeInfo.getY()));
+                restArea.setLongitude(Double.parseDouble(placeInfo.getX()));
+                restArea.setRoadAddress(placeInfo.getRoad_address_name());
+                restArea.setPhone(placeInfo.getPhone());
+                restArea.setRestAreaNm(placeInfo.getPlace_name());
+
+                restAreaRepository.save(restArea);
+            }
+            catch(Exception e){
+                System.out.println("[" + restArea.getStdRestNm() + "] 업데이트 실패 : " + e.getMessage());;
+            }
+        }
+    }
+
 
     // kakao Api 호출
     public KakaoPlaceResponse.Document getPlaceInfo(String stdRestNm) {
-        KakaoPlaceResponse response = getWebClient().get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/v2/local/search/keyword.json")
-                        .queryParam("query", stdRestNm)
-                        .build())
-                .retrieve()
-                .bodyToMono(KakaoPlaceResponse.class)
-                .block();
+        KakaoPlaceResponse.Document result = searchWithCategoryFilter(stdRestNm);
 
-        if (response == null || response.getDocuments().isEmpty()) {
-            throw new NotFoundException("장소를 찾을 수 없습니다 :" + stdRestNm);
+        // 키워드 검색 시 카테고리에 고속도로휴게소/휴게소가 없을 경우
+        if(result == null){
+            // 휴게소 방향 제거 후 재검색
+            String fallback = stdRestNm.replaceAll("\\(.*?\\)", "").trim();
+            result = searchWithCategoryFilter(fallback);
         }
+
+        if(result == null){
+            throw new NotFoundException("장소를 찾을 수 없습니다. " + stdRestNm);
+        }
+
+        return result;
+    }
+
+    // 카테고리 필터링
+    private KakaoPlaceResponse.Document searchWithCategoryFilter(String keyword){
+        KakaoPlaceResponse response = searchKakao(keyword);
+        if(response == null || response.getDocuments().isEmpty()) return null;
+
         return response.getDocuments().stream()
                 .filter(document -> {
                     String category = document.getCategory_name();
-                    return category != null &&
-                            (category.contains("고속도로휴게소") || category.contains("휴게소"));
-                }).min((a, b) -> {
+                    return category != null && (
+                            category.contains("고속도로휵소") || category.contains("휴게소")
+                            );
+                })
+                // 고속도로휴게소 -> 휴게소 정렬 : 고속도로에 있는 휴게소가 아닌 값을 가져올 수 있기 때문에. 우선순위를 둠.
+                .min((a, b) -> {
                     boolean aIsHighway = a.getCategory_name().contains("고속도로휴게소");
                     boolean bIsHighway = b.getCategory_name().contains("고속도로휴게소");
                     return Boolean.compare(!aIsHighway, !bIsHighway);
                 })
-                .orElseThrow(() -> new NotFoundException("고속도로휴게소 또는 휴게소 정보를 찾을 수 없습니다.: " + stdRestNm));
+                .orElse(null);
     }
+
+    // kakao map api 검색
+    private KakaoPlaceResponse searchKakao(String keyword){
+        return getWebClient().get().uri(uriBuilder -> uriBuilder
+                    .path("/v2/local/search/keyword.json")
+                    .queryParam("query", keyword)
+                    .build())
+                .retrieve()
+                .bodyToMono(KakaoPlaceResponse.class)
+                .block();
+    }
+
+    // 휴게소 조회
+    public List<RestArea> getRestAreasByName(String restAreaNm){
+        return restAreaRepository.findByRestAreaNmContaining(restAreaNm);
+    }
+
+
 }
