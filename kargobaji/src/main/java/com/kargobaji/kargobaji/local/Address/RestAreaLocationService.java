@@ -1,6 +1,5 @@
 package com.kargobaji.kargobaji.local.Address;
 
-import com.kargobaji.kargobaji.config.NotFoundException;
 import com.kargobaji.kargobaji.local.Address.dto.KakaoPlaceResponse;
 import com.kargobaji.kargobaji.openAPI.entity.RestArea;
 import com.kargobaji.kargobaji.openAPI.repository.RestAreaRepository;
