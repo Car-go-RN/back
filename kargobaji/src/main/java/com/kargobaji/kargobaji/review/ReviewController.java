@@ -3,13 +3,14 @@ package com.kargobaji.kargobaji.review;
 import com.kargobaji.kargobaji.review.dto.ReviewEditRequestDto;
 import com.kargobaji.kargobaji.review.dto.ReviewRequestDto;
 import com.kargobaji.kargobaji.review.dto.ReviewResponseDto;
-import com.kargobaji.kargobaji.review.entity.Review;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -17,40 +18,44 @@ import java.util.List;
 public class ReviewController {
     private final ReviewService reviewService;
 
-    // 리뷰 게시
+    // 리뷰 생성
     @PostMapping
-    public ResponseEntity<ReviewResponseDto> createReview(@RequestBody @Valid ReviewRequestDto reviewRequestDto){
-        return ResponseEntity.ok(reviewService.createReview(reviewRequestDto));
+    public ResponseEntity<ReviewResponseDto> createReview(
+            @RequestBody ReviewRequestDto requestDto,
+            @RequestParam String restAreaNm){
+        ReviewResponseDto responseDto = reviewService.createReview(requestDto, restAreaNm);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
-    // 리뷰 전체 조회
-    @GetMapping("/list")
-    public ResponseEntity<List<Review>> getReviewAll(){
-        return ResponseEntity.ok(reviewService.getReviewAll());
+    // 휴게소 이름으로 리뷰 조회
+    @GetMapping("/rest-area")
+    public ResponseEntity<List<ReviewResponseDto>> getReviewByRestAreaNm(@RequestParam String restAreaNm){
+        List<ReviewResponseDto> reviewResponseDtoList = reviewService.getReviewByRestAreaNm(restAreaNm);
+        return ResponseEntity.ok(reviewResponseDtoList);
     }
 
-    // 휴게소 리뷰 조회
-    @GetMapping("/search")
-    public ResponseEntity<List<ReviewResponseDto>> getReviewByRestAreaNm(@RequestParam("restAreaNm") String restAreaNm){
-        List<ReviewResponseDto> reviewResponseDtos = reviewService.getReviewByRestArea(restAreaNm);
-        return ResponseEntity.ok(reviewResponseDtos);
-    }
-
-    // 리뷰 조회
+    // 단일 리뷰 조회
     @GetMapping("/{id}")
     public ResponseEntity<ReviewResponseDto> getReview(@PathVariable Long id){
-        ReviewResponseDto reviewResponseDto = reviewService.getReview(id);
-        return ResponseEntity.ok(reviewResponseDto);
+        ReviewResponseDto review = reviewService.getReview(id);
+        return ResponseEntity.ok(review);
     }
 
-    // 리뷰 수정
+    // 전체 리뷰 조회
+    @GetMapping
+    public ResponseEntity<List<ReviewResponseDto>> getAllReview(){
+        List<ReviewResponseDto> reviews = reviewService.getReviewAll();
+        return ResponseEntity.ok(reviews);
+    }
+
     @PatchMapping("/{id}")
-    public ResponseEntity<ReviewResponseDto> updateReview(@PathVariable Long id, @RequestBody @Valid ReviewEditRequestDto reviewEditRequestDto){
-        ReviewResponseDto reviewResponseDto = reviewService.updateReview(id, reviewEditRequestDto);
+    public ResponseEntity<ReviewResponseDto> editReview(
+            @PathVariable Long id,
+            @RequestBody ReviewEditRequestDto reviewEditRequestDto){
+        ReviewResponseDto reviewResponseDto = reviewService.editReview(reviewEditRequestDto, id);
         return ResponseEntity.ok(reviewResponseDto);
     }
 
-    // 리뷰 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteReview(@PathVariable Long id){
         reviewService.deleteReview(id);

@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    List<Review> findByRestAreaNm(String restAreaNm);
+    List<Review> findByRestArea_RestAreaNmContaining(String restAreaNm);
 }

@@ -1,7 +1,6 @@
 package com.kargobaji.kargobaji.openAPI;
 
 import lombok.RequiredArgsConstructor;
-import org.json.simple.parser.ParseException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +24,7 @@ public class OpenApiController {
 
     // 공공데이터 DB 저장
     @PostMapping("/sync")
-    public ResponseEntity<String> fetchAndSaveData() throws ParseException {
+    public ResponseEntity<String> fetchAndSaveData(){
             openApiManager.fetchAndSave();
             return ResponseEntity.ok("데이터가 성공적으로 저장되었습니다.");
     }
@@ -49,8 +48,6 @@ public class OpenApiController {
         List<Map<String, Object>> result = openApiManager.getData(table, field, filters, limit);
         return ResponseEntity.ok(result);
     }
-
-
 }
 
 

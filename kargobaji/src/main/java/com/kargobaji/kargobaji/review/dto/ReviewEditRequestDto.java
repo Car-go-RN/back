@@ -1,5 +1,6 @@
 package com.kargobaji.kargobaji.review.dto;
 
+import com.kargobaji.kargobaji.review.entity.Review;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -21,4 +22,10 @@ public class ReviewEditRequestDto {
     private int grade;
 
     private LocalDateTime editTime;
+
+    public void editToEntity(Review review){
+        review.setContent(this.content);
+        review.setGrade(this.grade);
+        review.setEditTime(LocalDateTime.now());
+    }
 }

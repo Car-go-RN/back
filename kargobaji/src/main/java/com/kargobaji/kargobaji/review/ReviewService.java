@@ -1,17 +1,17 @@
 package com.kargobaji.kargobaji.review;
 
 
+import com.kargobaji.kargobaji.openAPI.entity.RestArea;
+import com.kargobaji.kargobaji.openAPI.repository.RestAreaRepository;
 import com.kargobaji.kargobaji.review.dto.ReviewEditRequestDto;
 import com.kargobaji.kargobaji.review.dto.ReviewRequestDto;
 import com.kargobaji.kargobaji.review.dto.ReviewResponseDto;
 import com.kargobaji.kargobaji.review.entity.Review;
 import com.kargobaji.kargobaji.review.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.LifecycleState;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,53 +19,59 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReviewService {
     private final ReviewRepository reviewRepository;
+    private final RestAreaRepository restAreaRepository;
 
-    // 리뷰 추가
-    @Transactional
-    public ReviewResponseDto createReview(ReviewRequestDto reviewRequestDto){
-        Review reviews = reviewRequestDto.toEntity();
+    // 리뷰 생성
+    @Transactional // 트랜잭션 체크
+    public ReviewResponseDto createReview(ReviewRequestDto requestDto, String restAreaNm){
+        RestArea restArea = restAreaRepository
+                .findFirstByRestAreaNmOrderByIdAsc(restAreaNm)
+                .orElseThrow(() -> new IllegalArgumentException("휴게소가 존재하지 않습니다."));
 
-        Review saved = reviewRepository.save(reviews);
+        Review review = requestDto.toEntity(restArea);
+        Review saved = reviewRepository.save(review);
         return ReviewResponseDto.fromEntity(saved);
     }
 
+    // 휴게소 이름으로 리뷰 조회
+    @Transactional
+    public List<ReviewResponseDto> getReviewByRestAreaNm (String restAreaNm){
+        List<Review> reviewList = reviewRepository.findByRestArea_RestAreaNmContaining(restAreaNm);
+        return reviewList.stream()
+                .map(ReviewResponseDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    // 리뷰 단일 조회
+    @Transactional
+    public ReviewResponseDto getReview (Long id){
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다."));
+        return ReviewResponseDto.fromEntity(review);
+    }
+
+    // 전체 리뷰 조회
+    @Transactional
+    public List<ReviewResponseDto> getReviewAll() {
+        List<Review> reviewList = reviewRepository.findAll();
+        return reviewList.stream()
+                .map(ReviewResponseDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
     // 리뷰 수정
-    public ReviewResponseDto updateReview(Long id, ReviewEditRequestDto reviewEditRequestDto){
+    @Transactional
+    public ReviewResponseDto editReview(ReviewEditRequestDto reviewEditRequestDto, Long id){
         Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 리뷰가 존재하지 않습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다."));
 
-        review.setContent(reviewEditRequestDto.getContent());
-        review.setGrade(reviewEditRequestDto.getGrade());
-        review.setEditTime(LocalDateTime.now());
-
-        reviewRepository.save(review);
+        reviewEditRequestDto.editToEntity(review);
         return ReviewResponseDto.fromEntity(review);
     }
 
-    // 리뷰 전체 조회
-    public List<Review> getReviewAll(){
-        return reviewRepository.findAll();
-    }
-
-    // 휴게소 리뷰 전체 조회
-    public List<ReviewResponseDto> getReviewByRestArea(String restAreaNm){
-        List<Review> reviewList = reviewRepository.findByRestAreaNm(restAreaNm);
-        return reviewList.stream().map(ReviewResponseDto::fromEntity).collect(Collectors.toList());
-    }
-
-    // 리뷰 조회
-    public ReviewResponseDto getReview(Long id){
-        Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 리뷰가 존재하지 않습니다."));
-        return ReviewResponseDto.fromEntity(review);
-    }
-
+    // 리뷰 삭제
+    @Transactional
     public void deleteReview(Long id){
         reviewRepository.deleteById(id);
     }
-
-
-
-
 }
-

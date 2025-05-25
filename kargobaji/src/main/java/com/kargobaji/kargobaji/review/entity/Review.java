@@ -1,6 +1,7 @@
 package com.kargobaji.kargobaji.review.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kargobaji.kargobaji.openAPI.entity.RestArea;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -31,11 +32,13 @@ public class Review {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDateTime createTime;
 
-    @CreatedDate
+    @LastModifiedDate
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDateTime editTime;
 
     private String username;
 
-    private String restAreaNm;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rest_area_id", nullable = false)
+    private RestArea restArea;
 }

@@ -1,5 +1,6 @@
 package com.kargobaji.kargobaji.review.dto;
 
+import com.kargobaji.kargobaji.openAPI.entity.RestArea;
 import com.kargobaji.kargobaji.review.entity.Review;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,8 +23,6 @@ public class ReviewResponseDto {
 
     private String username;
 
-    private String restAreaNm;
-
     public static ReviewResponseDto fromEntity(Review review){
         return new ReviewResponseDto(
                 review.getId(),
@@ -31,8 +30,7 @@ public class ReviewResponseDto {
                 review.getGrade(),
                 review.getCreateTime(),
                 review.getEditTime(),
-                review.getUsername(),
-                review.getRestAreaNm()
+                review.getUsername()
         );
 
     }

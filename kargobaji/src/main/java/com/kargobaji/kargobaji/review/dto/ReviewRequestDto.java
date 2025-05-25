@@ -1,9 +1,11 @@
 package com.kargobaji.kargobaji.review.dto;
 
+import com.kargobaji.kargobaji.openAPI.entity.RestArea;
 import com.kargobaji.kargobaji.review.entity.Review;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,15 +26,12 @@ public class ReviewRequestDto {
     @NotBlank(message = "존재하지 않는 유저입니다.")
     private String username;
 
-    @NotBlank(message = "존재하지 않는 휴게소입니다.")
-    private String restAreaNm;
-
-    public Review toEntity(){
+    public Review toEntity(RestArea restArea){
         return Review.builder()
                 .content(this.content)
                 .grade(this.grade)
                 .username(this.username)
-                .restAreaNm(this.restAreaNm)
+                .restArea(restArea) // 연관관계 주입3
                 .build();
     }
 }
