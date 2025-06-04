@@ -45,6 +45,7 @@ public class ReviewService {
     // 리뷰 단일 조회
     @Transactional
     public ReviewResponseDto getReview (Long id){
+
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다."));
         return ReviewResponseDto.fromEntity(review);
