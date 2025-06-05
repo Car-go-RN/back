@@ -1,6 +1,7 @@
 package com.kargobaji.kargobaji.review;
 
 import com.kargobaji.kargobaji.review.dto.ReviewEditRequestDto;
+import com.kargobaji.kargobaji.review.dto.ReviewListResponseDto;
 import com.kargobaji.kargobaji.review.dto.ReviewRequestDto;
 import com.kargobaji.kargobaji.review.dto.ReviewResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +29,10 @@ public class ReviewController {
     }
 
     // 휴게소 이름으로 리뷰 조회
-    @GetMapping("/rest-area")
-    public ResponseEntity<List<ReviewResponseDto>> getReviewByRestAreaNm(@RequestParam String restAreaNm){
-        List<ReviewResponseDto> reviewResponseDtoList = reviewService.getReviewByRestAreaNm(restAreaNm);
-        return ResponseEntity.ok(reviewResponseDtoList);
+    @GetMapping("/search")
+    public ResponseEntity<ReviewListResponseDto> getReviewByRestArea(@RequestParam("restAreaId") Long restAreaId){
+        ReviewListResponseDto responseDto = reviewService.getReviewByRestArea(restAreaId);
+        return ResponseEntity.ok(responseDto);
     }
 
     // 단일 리뷰 조회

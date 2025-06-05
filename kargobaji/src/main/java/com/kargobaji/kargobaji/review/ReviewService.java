@@ -4,6 +4,7 @@ package com.kargobaji.kargobaji.review;
 import com.kargobaji.kargobaji.openAPI.entity.RestArea;
 import com.kargobaji.kargobaji.openAPI.repository.RestAreaRepository;
 import com.kargobaji.kargobaji.review.dto.ReviewEditRequestDto;
+import com.kargobaji.kargobaji.review.dto.ReviewListResponseDto;
 import com.kargobaji.kargobaji.review.dto.ReviewRequestDto;
 import com.kargobaji.kargobaji.review.dto.ReviewResponseDto;
 import com.kargobaji.kargobaji.review.entity.Review;
@@ -35,11 +36,13 @@ public class ReviewService {
 
     // 휴게소 이름으로 리뷰 조회
     @Transactional
-    public List<ReviewResponseDto> getReviewByRestAreaNm (String restAreaNm){
-        List<Review> reviewList = reviewRepository.findByRestArea_RestAreaNmContaining(restAreaNm);
-        return reviewList.stream()
+    public ReviewListResponseDto getReviewByRestArea(Long restAreaId) {
+        List<Review> reviewList = reviewRepository.findByRestAreaId(restAreaId);
+        List<ReviewResponseDto> responseDtos = reviewList.stream()
                 .map(ReviewResponseDto::fromEntity)
                 .collect(Collectors.toList());
+
+        return new ReviewListResponseDto(responseDtos.size(), responseDtos);
     }
 
     // 리뷰 단일 조회
