@@ -9,7 +9,7 @@ spring:
           starttls:
             enable: 'true'
           auth: 'true'
-    password: ycayychljtzjzyjh
+    password: ${mail.password}
   jpa:
     database: postgresql
     hibernate:
@@ -21,7 +21,7 @@ spring:
     password: '1976'
     driver-class-name: org.postgresql.Driver
     username: postgres
-    url: jdbc:postgresql://localhost:5432/kargodb
+    url: jdbc:postgresql://svc.sel4.cloudtype.app:30988/kargodb
 server:
   port: '8090'
 jwt:
