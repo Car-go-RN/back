@@ -18,9 +18,9 @@ spring:
   application:
     name: kargobaji
   datasource:
-    password: '1976'
+    password: root
     driver-class-name: org.postgresql.Driver
-    username: postgres
+    username: root
     url: jdbc:postgresql://svc.sel4.cloudtype.app:30988/kargodb
 server:
   port: '8090'
