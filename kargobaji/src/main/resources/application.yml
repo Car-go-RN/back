@@ -9,7 +9,7 @@ spring:
           starttls:
             enable: 'true'
           auth: 'true'
-    password: ${mail.password}
+    password: ${mail_password}
   jpa:
     database: postgresql
     hibernate:
