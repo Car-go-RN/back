@@ -26,7 +26,7 @@ public class User {
         return this.username;
     }
 
-    public CharSequence getPassword() {
+    public String getPassword() {
         return this.password;
     }
 

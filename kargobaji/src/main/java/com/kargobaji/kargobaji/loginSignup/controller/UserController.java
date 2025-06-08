@@ -1,6 +1,7 @@
 package com.kargobaji.kargobaji.loginSignup.controller;
 
 import com.kargobaji.kargobaji.loginSignup.domain.User;
+import com.kargobaji.kargobaji.loginSignup.dto.UserRegisterRequestDto;
 import com.kargobaji.kargobaji.loginSignup.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,12 @@ public class UserController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody User user){
+    public ResponseEntity<String> register(@RequestBody UserRegisterRequestDto request){
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setUsername(request.getUsername());
+        user.setPassword(request.getPassword()); // UserService.register() 안에서 encode 처리됨.
+
         userService.register(user);
         return ResponseEntity.ok("회원가입 성공!");
     }
