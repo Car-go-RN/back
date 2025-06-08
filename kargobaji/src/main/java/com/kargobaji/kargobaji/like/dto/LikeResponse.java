@@ -1,8 +1,6 @@
-package com.kargobaji.kargobaji.like.dto;
+package com.kargobaji.kargobaji.likeAndFavorite.dto;
 
-import com.kargobaji.kargobaji.User;
-import com.kargobaji.kargobaji.like.entity.Like;
-import com.kargobaji.kargobaji.openAPI.entity.RestArea;
+import com.kargobaji.kargobaji.likeAndFavorite.entity.Like;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

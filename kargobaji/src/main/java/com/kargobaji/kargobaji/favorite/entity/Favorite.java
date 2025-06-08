@@ -1,4 +1,4 @@
-package com.kargobaji.kargobaji.likeAndFavorite.entity;
+package com.kargobaji.kargobaji.favorite.entity;
 
 import com.kargobaji.kargobaji.User;
 import com.kargobaji.kargobaji.openAPI.entity.RestArea;
@@ -7,18 +7,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
-@Table(name = "likes")
-public class Like {
+public class Favirote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 즐겨찾기 id
+    private Long Id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -28,4 +29,6 @@ public class Like {
     @JoinColumn(name = "restArea_id")
     private RestArea restArea;
 
+    @CreatedDate
+    private LocalDateTime createdDate;
 }
