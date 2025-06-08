@@ -1,4 +1,4 @@
-package com.kargobaji.kargobaji.likeAndFavorite.entity;
+package com.kargobaji.kargobaji.like.entity;
 
 import com.kargobaji.kargobaji.User;
 import com.kargobaji.kargobaji.openAPI.entity.RestArea;

@@ -18,19 +18,18 @@ public class LikeService {
     private final UserRepository userRepository;
     private final RestAreaRepository restAreaRepository;
 
-    // 좋아요 생성/삭제
+    // 좋아요 생성 / 삭제
     @Transactional
     public LikeResponse goodRestArea(Long restAreaId, Long userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
 
-        System.out.println(restAreaId);
-
         RestArea restArea = restAreaRepository.findById(restAreaId)
                 .orElseThrow(() -> new IllegalArgumentException("휴게소가 존재하지 않습니다."));
 
-        if(user.getLikes().stream().anyMatch(like ->
-                like.getRestArea().equals(restArea))){
+        boolean exists = likeRepository.existsByUserAndRestArea(user, restArea);
+
+        if(exists){
             likeRepository.deleteByUserAndRestArea(user, restArea);
             return LikeResponse.builder()
                     .user(user.getId())

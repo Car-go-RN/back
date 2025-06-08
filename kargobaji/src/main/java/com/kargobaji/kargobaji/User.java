@@ -1,5 +1,6 @@
 package com.kargobaji.kargobaji;
 
+import com.kargobaji.kargobaji.favorite.entity.Favorite;
 import com.kargobaji.kargobaji.like.entity.Like;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,4 +27,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Like> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Favorite> favorites = new ArrayList<>();
 }
