@@ -11,6 +11,5 @@ public interface RestAreaBrandRepository extends JpaRepository<RestAreaBrand, Lo
     // stdRestNm과 brdName 기준으로 데이터를 조회
     RestAreaBrand findByStdRestNmAndBrdName(String stdRestNm, String brdName);
     List<RestAreaBrand> findByStdRestNm(String stdRestNm);
-
 }
 

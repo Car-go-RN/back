@@ -1,5 +1,7 @@
 package com.kargobaji.kargobaji.openAPI.entity;
 
+import com.kargobaji.kargobaji.favorite.entity.Favorite;
+import com.kargobaji.kargobaji.like.entity.Like;
 import com.kargobaji.kargobaji.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,5 +38,9 @@ public class RestArea {
     @OneToMany(mappedBy = "restArea", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviewList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "restArea", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Like> likeList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "restArea", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Favorite> favoriteList = new ArrayList<>();
 }
