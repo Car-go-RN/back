@@ -1,6 +1,7 @@
 package com.kargobaji.kargobaji.loginSignup.controller;
 
 import com.kargobaji.kargobaji.loginSignup.dto.EmailRequest;
+import com.kargobaji.kargobaji.loginSignup.dto.VerifyCodeRequest;
 import com.kargobaji.kargobaji.loginSignup.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +21,8 @@ public class EmailVerificationController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<String> verifyCode(@RequestParam String email, @RequestParam String code) {
-        boolean result = emailService.verifyCode(email, code);
+    public ResponseEntity<String> verifyCode(@RequestBody VerifyCodeRequest request) {
+        boolean result = emailService.verifyCode(request.getEmail(), request.getCode());
         return result ?
                 ResponseEntity.ok("인증 성공!") :
                 ResponseEntity.status(400).body("인증 실패: 코드가 일치하지 않습니다.");
