@@ -1,5 +1,9 @@
-package com.kargobaji.kargobaji.openAPI.entity;
+package com.kargobaji.kargobaji.openAPI.dto;
 
+import com.kargobaji.kargobaji.openAPI.entity.RestArea;
+import com.kargobaji.kargobaji.openAPI.entity.RestAreaBrand;
+import com.kargobaji.kargobaji.openAPI.entity.RestAreaFacility;
+import com.kargobaji.kargobaji.openAPI.entity.RestAreaFood;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,12 +11,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-// RestAreaDetailDto.java
-// RestAreaDetailDto.java
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class RestAreaDetailDto {
     private Long id;
     private String stdRestNm;
@@ -25,16 +27,15 @@ public class RestAreaDetailDto {
     private Double longitude;
     private String restAreaNm;
 
-    private List<String> brandNames;
-    private List<String> facilityNames;
+    private List<String> brands;
+    private List<String> facilities;
     private List<FoodDto> foods;
 
     @Data
-    @Builder
-    public static class FoodDto {
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class FoodDto{
         private String foodNm;
         private String foodCost;
     }
 }
-
-

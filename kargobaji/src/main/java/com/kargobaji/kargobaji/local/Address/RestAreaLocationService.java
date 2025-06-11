@@ -124,10 +124,5 @@ public class RestAreaLocationService {
                 .block();
     }
 
-    // 휴게소 조회
-    public List<RestArea> getRestAreasByName(String restAreaNm){
-        return restAreaRepository.findByRestAreaNmContaining(restAreaNm);
-    }
-
 
 }

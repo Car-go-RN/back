@@ -1,5 +1,6 @@
 package com.kargobaji.kargobaji.openAPI;
 
+import com.kargobaji.kargobaji.openAPI.dto.RestAreaDetailDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ public class OpenApiController {
             return ResponseEntity.ok("데이터가 성공적으로 저장되었습니다.");
     }
 
-    // 조회
+    // 분야별 조회
     @GetMapping("/{table}") // brand, facility, food, gas
     public ResponseEntity<List<Map<String, Object>>> getData(
             @PathVariable String table,
@@ -47,6 +48,13 @@ public class OpenApiController {
 
         List<Map<String, Object>> result = openApiManager.getData(table, field, filters, limit);
         return ResponseEntity.ok(result);
+    }
+
+    // 휴게소 상세 정보 조회
+    @GetMapping("/detail")
+    public ResponseEntity<RestAreaDetailDto> getRestAreaDetail(@RequestParam String stdRestNm){
+        RestAreaDetailDto detailDto = openApiManager.getRestAreaDetail(stdRestNm);
+        return ResponseEntity.ok(detailDto);
     }
 }
 

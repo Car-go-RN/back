@@ -10,5 +10,6 @@ import java.util.List;
 public interface RestAreaFoodRepository extends JpaRepository<RestAreaFood, Long> {
     // stdRestNm과 foodNm을 기준으로 데이터를 조회
     RestAreaFood findByStdRestNmAndFoodNm(String stdRestNm, String foodNm);
+
     List<RestAreaFood> findByStdRestNm(String stdRestNm);
 }

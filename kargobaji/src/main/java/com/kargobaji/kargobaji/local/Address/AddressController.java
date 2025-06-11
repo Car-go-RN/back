@@ -28,12 +28,6 @@ public class AddressController {
         List<KakaoPlaceResponse.Document> results = restAreaLocationService.getAllPlacesInfo();
         return ResponseEntity.ok(results);
     }
-    
-    // 휴게소 정보 가져오기
-    @GetMapping("/restArea/search") 
-    public List<RestArea> getRestAreasByName(@RequestParam String name){
-        return restAreaLocationService.getRestAreasByName(name);
-    }
 
     // 휴게소 위치 정보 저장
     @PostMapping("/kakao/update")

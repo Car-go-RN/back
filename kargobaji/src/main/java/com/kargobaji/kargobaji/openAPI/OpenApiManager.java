@@ -1,6 +1,7 @@
 package com.kargobaji.kargobaji.openAPI;
 
 
+import com.kargobaji.kargobaji.openAPI.dto.RestAreaDetailDto;
 import com.kargobaji.kargobaji.openAPI.entity.*;
 import com.kargobaji.kargobaji.openAPI.repository.*;
 import lombok.Data;
@@ -354,4 +355,38 @@ public class OpenApiManager {
         }
         return map;
     }
+
+    // 휴게소 상세 정보 가져오기
+    public RestAreaDetailDto getRestAreaDetail(String stdRestNm){
+        RestArea restArea = restAreaRepository.findByStdRestNm(stdRestNm)
+                .orElseThrow(() -> new IllegalArgumentException("휴게소를 찾을 수 없습니다."));
+
+        List<String> brands = restAreaBrandRepository.findByStdRestNm(stdRestNm)
+                .stream().map(RestAreaBrand::getBrdName).toList();
+
+        List<String> facilities = restAreaFacilityRepository.findByStdRestNm(stdRestNm)
+                .stream().map(RestAreaFacility::getPsName).toList();
+
+        List<RestAreaDetailDto.FoodDto> foods = restAreaFoodRepository.findByStdRestNm(stdRestNm)
+                .stream().map(f -> new RestAreaDetailDto.FoodDto(f.getFoodNm(), f.getFoodCost()))
+                .toList();
+
+        return RestAreaDetailDto.builder()
+                .id(restArea.getId())
+                .stdRestNm(restArea.getStdRestNm())
+                .gasolinePrice(restArea.getGasolinePrice())
+                .diselPrice(restArea.getDiselPrice())
+                .lpgPrice(restArea.getLpgPrice())
+                .roadAddress(restArea.getRoadAddress())
+                .phone(restArea.getPhone())
+                .latitude(restArea.getLatitude())
+                .longitude(restArea.getLongitude())
+                .restAreaNm(restArea.getRestAreaNm())
+                .brands(brands)
+                .facilities(facilities)
+                .foods(foods)
+                .build();
+    }
 }
+
+

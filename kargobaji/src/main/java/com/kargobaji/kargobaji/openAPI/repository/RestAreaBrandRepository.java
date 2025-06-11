@@ -10,5 +10,6 @@ import java.util.List;
 public interface RestAreaBrandRepository extends JpaRepository<RestAreaBrand, Long> {
     // stdRestNm과 brdName 기준으로 데이터를 조회
     RestAreaBrand findByStdRestNmAndBrdName(String stdRestNm, String brdName);
+
     List<RestAreaBrand> findByStdRestNm(String stdRestNm);
 }
