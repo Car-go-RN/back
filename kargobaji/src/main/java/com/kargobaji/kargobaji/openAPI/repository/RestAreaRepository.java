@@ -12,6 +12,8 @@ public interface RestAreaRepository extends JpaRepository<RestArea, Long> {
     // 휴게소 정보 조회
     List<RestArea> findByRestAreaNmContaining(String restAreaNm);
 
+    Optional<RestArea> findByStdRestNm(String stdRestNm);
+
     // 중복된 휴게소 이름일 경우엔 id값이 가장 작은 데이터를 조회
     Optional<RestArea> findFirstByRestAreaNmOrderByIdAsc(String restAreaNm);
 }

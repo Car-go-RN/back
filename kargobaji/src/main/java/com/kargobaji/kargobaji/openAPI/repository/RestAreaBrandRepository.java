@@ -12,4 +12,3 @@ public interface RestAreaBrandRepository extends JpaRepository<RestAreaBrand, Lo
     RestAreaBrand findByStdRestNmAndBrdName(String stdRestNm, String brdName);
     List<RestAreaBrand> findByStdRestNm(String stdRestNm);
 }
-
