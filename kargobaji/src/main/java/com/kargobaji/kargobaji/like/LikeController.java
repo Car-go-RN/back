@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/likes")
@@ -28,5 +30,12 @@ public class LikeController {
     ){
         Long response = likeService.countLikeRestArea(restAreaId);
         return ResponseEntity.ok(response);
+    }
+
+    // 유저가 좋아요한 휴게소 이름값(stdRestNm) 조회
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<String>> getFavoriteRestAreaId(@PathVariable Long userId){
+        List<String> restArea = likeService.getLikeUser(userId);
+        return ResponseEntity.ok(restArea);
     }
 }

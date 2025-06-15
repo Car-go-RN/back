@@ -1,6 +1,7 @@
 package com.kargobaji.kargobaji.review.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kargobaji.kargobaji.User;
 import com.kargobaji.kargobaji.openAPI.entity.RestArea;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,7 +37,10 @@ public class Review {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDateTime editTime;
 
-    private String username;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rest_area_id", nullable = false)

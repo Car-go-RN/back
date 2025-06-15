@@ -24,10 +24,10 @@ public class FavoriteController {
         return ResponseEntity.ok(response);
     }
 
-    // 유저가 즐겨찾기한 휴게소 id값 조회
+    // 유저가 즐겨찾기한 휴게소 이름값(stdRestNm) 조회
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Long>> getFavoriteRestAreaId(@PathVariable Long userId){
-        List<Long> restAreaId = favoriteService.getFavoriteUser(userId);
-        return ResponseEntity.ok(restAreaId);
+    public ResponseEntity<List<String>> getFavoriteRestAreaId(@PathVariable Long userId){
+        List<String> restArea = favoriteService.getFavoriteUser(userId);
+        return ResponseEntity.ok(restArea);
     }
 }

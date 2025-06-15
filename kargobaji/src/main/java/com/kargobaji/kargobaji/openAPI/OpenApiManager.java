@@ -357,36 +357,53 @@ public class OpenApiManager {
     }
 
     // 휴게소 상세 정보 가져오기
-    public RestAreaDetailDto getRestAreaDetail(String stdRestNm){
-        RestArea restArea = restAreaRepository.findByStdRestNm(stdRestNm)
-                .orElseThrow(() -> new IllegalArgumentException("휴게소를 찾을 수 없습니다."));
+    public List<RestAreaDetailDto> getRestAreaDetail(String stdRestNm, int page) {
+        List<RestArea> restAreas;
 
-        List<String> brands = restAreaBrandRepository.findByStdRestNm(stdRestNm)
-                .stream().map(RestAreaBrand::getBrdName).toList();
+        // 15개씩 출력 (이름 없을 시)
+        if (stdRestNm == null || stdRestNm.trim().isEmpty()) {
+            int pageSize = 15;
+            int offset = (Math.max(page, 1) - 1) * pageSize;
 
-        List<String> facilities = restAreaFacilityRepository.findByStdRestNm(stdRestNm)
-                .stream().map(RestAreaFacility::getPsName).toList();
+            restAreas = restAreaRepository.findAll().stream()
+                    .skip(offset)
+                    .limit(pageSize)
+                    .toList();
+        } else {
+            RestArea restArea = restAreaRepository.findByStdRestNm(stdRestNm)
+                    .orElseThrow(() -> new IllegalArgumentException("휴게소를 찾을 수 없습니다."));
+            restAreas = List.of(restArea);
+        }
 
-        List<RestAreaDetailDto.FoodDto> foods = restAreaFoodRepository.findByStdRestNm(stdRestNm)
-                .stream().map(f -> new RestAreaDetailDto.FoodDto(f.getFoodNm(), f.getFoodCost()))
-                .toList();
+        return restAreas.stream().map(restArea -> {
+            List<String> brands = restAreaBrandRepository.findByStdRestNm(restArea.getStdRestNm())
+                    .stream().map(RestAreaBrand::getBrdName).toList();
 
-        return RestAreaDetailDto.builder()
-                .id(restArea.getId())
-                .stdRestNm(restArea.getStdRestNm())
-                .gasolinePrice(restArea.getGasolinePrice())
-                .diselPrice(restArea.getDiselPrice())
-                .lpgPrice(restArea.getLpgPrice())
-                .roadAddress(restArea.getRoadAddress())
-                .phone(restArea.getPhone())
-                .latitude(restArea.getLatitude())
-                .longitude(restArea.getLongitude())
-                .restAreaNm(restArea.getRestAreaNm())
-                .brands(brands)
-                .facilities(facilities)
-                .foods(foods)
-                .build();
+            List<String> facilities = restAreaFacilityRepository.findByStdRestNm(restArea.getStdRestNm())
+                    .stream().map(RestAreaFacility::getPsName).toList();
+
+            List<RestAreaDetailDto.FoodDto> foods = restAreaFoodRepository.findByStdRestNm(restArea.getStdRestNm())
+                    .stream().map(f -> new RestAreaDetailDto.FoodDto(f.getFoodNm(), f.getFoodCost()))
+                    .toList();
+
+            return RestAreaDetailDto.builder()
+                    .id(restArea.getId())
+                    .stdRestNm(restArea.getStdRestNm())
+                    .gasolinePrice(restArea.getGasolinePrice())
+                    .diselPrice(restArea.getDiselPrice())
+                    .lpgPrice(restArea.getLpgPrice())
+                    .roadAddress(restArea.getRoadAddress())
+                    .phone(restArea.getPhone())
+                    .latitude(restArea.getLatitude())
+                    .longitude(restArea.getLongitude())
+                    .restAreaNm(restArea.getRestAreaNm())
+                    .brands(brands)
+                    .facilities(facilities)
+                    .foods(foods)
+                    .build();
+        }).toList();
     }
+
 }
 
 

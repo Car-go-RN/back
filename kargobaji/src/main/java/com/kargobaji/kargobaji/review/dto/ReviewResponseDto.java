@@ -21,7 +21,7 @@ public class ReviewResponseDto {
     private LocalDateTime createTime;
     private LocalDateTime editTime;
 
-    private String username;
+    private Long userId;
 
     public static ReviewResponseDto fromEntity(Review review){
         return new ReviewResponseDto(
@@ -30,7 +30,7 @@ public class ReviewResponseDto {
                 review.getGrade(),
                 review.getCreateTime(),
                 review.getEditTime(),
-                review.getUsername()
+                review.getUser().getId()
         );
 
     }

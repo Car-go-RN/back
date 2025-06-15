@@ -52,9 +52,11 @@ public class OpenApiController {
 
     // 휴게소 상세 정보 조회
     @GetMapping("/detail")
-    public ResponseEntity<RestAreaDetailDto> getRestAreaDetail(@RequestParam String stdRestNm){
-        RestAreaDetailDto detailDto = openApiManager.getRestAreaDetail(stdRestNm);
-        return ResponseEntity.ok(detailDto);
+    public ResponseEntity<List<RestAreaDetailDto>> getRestAreaDetail(
+            @RequestParam(required = false) String stdRestNm,
+            @RequestParam(defaultValue = "1") int page) {
+        List<RestAreaDetailDto> detailDtos = openApiManager.getRestAreaDetail(stdRestNm, page);
+        return ResponseEntity.ok(detailDtos);
     }
 }
 

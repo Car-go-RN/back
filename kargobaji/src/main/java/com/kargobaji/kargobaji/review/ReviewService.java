@@ -1,6 +1,8 @@
 package com.kargobaji.kargobaji.review;
 
 
+import com.kargobaji.kargobaji.User;
+import com.kargobaji.kargobaji.UserRepository;
 import com.kargobaji.kargobaji.openAPI.entity.RestArea;
 import com.kargobaji.kargobaji.openAPI.repository.RestAreaRepository;
 import com.kargobaji.kargobaji.review.dto.ReviewEditRequestDto;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final RestAreaRepository restAreaRepository;
+    private final UserRepository userRepository;
 
     // 리뷰 생성
     @Transactional // 트랜잭션 체크
@@ -29,7 +32,10 @@ public class ReviewService {
                 .findFirstByRestAreaNmOrderByIdAsc(restAreaNm)
                 .orElseThrow(() -> new IllegalArgumentException("휴게소가 존재하지 않습니다."));
 
-        Review review = requestDto.toEntity(restArea);
+        User user = userRepository.findById(requestDto.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+
+        Review review = requestDto.toEntity(restArea, user);
         Review saved = reviewRepository.save(review);
         return ReviewResponseDto.fromEntity(saved);
     }

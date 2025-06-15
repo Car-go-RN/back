@@ -2,6 +2,7 @@ package com.kargobaji.kargobaji.like;
 
 import com.kargobaji.kargobaji.User;
 import com.kargobaji.kargobaji.UserRepository;
+import com.kargobaji.kargobaji.favorite.entity.Favorite;
 import com.kargobaji.kargobaji.like.dto.LikeResponse;
 import com.kargobaji.kargobaji.like.entity.Like;
 import com.kargobaji.kargobaji.like.repository.LikeRepository;
@@ -10,6 +11,9 @@ import com.kargobaji.kargobaji.openAPI.repository.RestAreaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -55,5 +59,17 @@ public class LikeService {
                 .orElseThrow(() -> new IllegalArgumentException("휴게소가 존재하지 않습니다."));
 
         return likeRepository.countByRestAreaId(restAreaId);
+    }
+
+    @Transactional
+    public List<String> getLikeUser(Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+
+        List<Like> likes = likeRepository.findByUserId(userId);
+
+        return likes.stream()
+                .map(favorite -> favorite.getRestArea().getStdRestNm())
+                .collect(Collectors.toList());
     }
 }

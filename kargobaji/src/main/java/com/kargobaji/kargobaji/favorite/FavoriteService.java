@@ -52,16 +52,16 @@ public class FavoriteService {
         return FavoriteResponse.fromEntity(savedFavorite, "즐겨찾기 추가 성공");
     }
 
-    // 해당 유저(id)의 즐겨찾기한 휴게소 Id값 가져오기
+    // 해당 유저(id)의 즐겨찾기한 휴게소 이름(stdRestNm) 가져오기
     @Transactional
-    public List<Long> getFavoriteUser(Long userId){
+    public List<String> getFavoriteUser(Long userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
 
         List<Favorite> favorites = favoriteRepository.findByUserId(userId);
 
         return favorites.stream()
-                .map(favorite -> favorite.getRestArea().getId())
+                .map(favorite -> favorite.getRestArea().getStdRestNm())
                 .collect(Collectors.toList());
     }
 }

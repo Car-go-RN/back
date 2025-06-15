@@ -1,5 +1,6 @@
 package com.kargobaji.kargobaji.review.dto;
 
+import com.kargobaji.kargobaji.User;
 import com.kargobaji.kargobaji.openAPI.entity.RestArea;
 import com.kargobaji.kargobaji.review.entity.Review;
 import jakarta.validation.constraints.Max;
@@ -23,15 +24,14 @@ public class ReviewRequestDto {
     @Min(value = 1, message = "벌점은 1점 이상여야 합니다.")
     private int grade;
 
-    @NotBlank(message = "존재하지 않는 유저입니다.")
-    private String username;
+    private Long userId;
 
-    public Review toEntity(RestArea restArea){
+    public Review toEntity(RestArea restArea, User user){
         return Review.builder()
                 .content(this.content)
                 .grade(this.grade)
-                .username(this.username)
                 .restArea(restArea) // 연관관계 주입3
+                .user(user)
                 .build();
     }
 }

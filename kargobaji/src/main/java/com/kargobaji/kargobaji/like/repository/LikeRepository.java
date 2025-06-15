@@ -6,6 +6,8 @@ import com.kargobaji.kargobaji.openAPI.entity.RestArea;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Long> {
     void deleteByUserAndRestArea(User user, RestArea restArea);
@@ -13,4 +15,6 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     long countByRestAreaId(Long restAreaId);
 
     boolean existsByUserAndRestArea(User user, RestArea restArea);
+
+    List<Like> findByUserId(Long userId);
 }
