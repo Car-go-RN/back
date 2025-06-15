@@ -1,12 +1,11 @@
 package com.kargobaji.kargobaji.review.dto;
 
-import com.kargobaji.kargobaji.User;
+import com.kargobaji.kargobaji.loginSignup.domain.User;
 import com.kargobaji.kargobaji.openAPI.entity.RestArea;
 import com.kargobaji.kargobaji.review.entity.Review;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;

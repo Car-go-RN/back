@@ -1,6 +1,6 @@
 package com.kargobaji.kargobaji.favorite.reposiroty;
 
-import com.kargobaji.kargobaji.User;
+import com.kargobaji.kargobaji.loginSignup.domain.User;
 import com.kargobaji.kargobaji.favorite.entity.Favorite;
 import com.kargobaji.kargobaji.openAPI.entity.RestArea;
 import org.springframework.data.jpa.repository.JpaRepository;

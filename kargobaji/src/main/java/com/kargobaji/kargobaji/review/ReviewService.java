@@ -1,8 +1,8 @@
 package com.kargobaji.kargobaji.review;
 
 
-import com.kargobaji.kargobaji.User;
-import com.kargobaji.kargobaji.UserRepository;
+import com.kargobaji.kargobaji.loginSignup.domain.User;
+import com.kargobaji.kargobaji.loginSignup.repository.UserRepository;
 import com.kargobaji.kargobaji.openAPI.entity.RestArea;
 import com.kargobaji.kargobaji.openAPI.repository.RestAreaRepository;
 import com.kargobaji.kargobaji.review.dto.ReviewEditRequestDto;

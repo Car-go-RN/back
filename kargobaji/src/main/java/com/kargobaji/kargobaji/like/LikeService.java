@@ -1,11 +1,10 @@
 package com.kargobaji.kargobaji.like;
 
-import com.kargobaji.kargobaji.User;
-import com.kargobaji.kargobaji.UserRepository;
-import com.kargobaji.kargobaji.favorite.entity.Favorite;
+import com.kargobaji.kargobaji.loginSignup.domain.User;
 import com.kargobaji.kargobaji.like.dto.LikeResponse;
 import com.kargobaji.kargobaji.like.entity.Like;
 import com.kargobaji.kargobaji.like.repository.LikeRepository;
+import com.kargobaji.kargobaji.loginSignup.repository.UserRepository;
 import com.kargobaji.kargobaji.openAPI.entity.RestArea;
 import com.kargobaji.kargobaji.openAPI.repository.RestAreaRepository;
 import lombok.RequiredArgsConstructor;

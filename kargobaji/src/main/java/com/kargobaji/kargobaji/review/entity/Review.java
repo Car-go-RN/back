@@ -1,7 +1,7 @@
 package com.kargobaji.kargobaji.review.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.kargobaji.kargobaji.User;
+import com.kargobaji.kargobaji.loginSignup.domain.User;
 import com.kargobaji.kargobaji.openAPI.entity.RestArea;
 import jakarta.persistence.*;
 import lombok.*;
