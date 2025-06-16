@@ -21,9 +21,6 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String username;
-
     @Column(nullable = false)
     private String password;
 
@@ -37,16 +34,4 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
-
-//    public String getUsername() {
-//        return this.username;
-//    }
-//
-//    public String getPassword() {
-//        return this.password;
-//    }
-//
-//    public void setPassword(String encode) {
-//        this.password = encode;
-//    }
 }

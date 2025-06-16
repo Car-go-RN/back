@@ -14,12 +14,10 @@ public class UserController {
 
     private final UserService userService;
 
-
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserRegisterRequestDto request){
+    public ResponseEntity<String> register(@RequestBody UserRegisterRequestDto request) {
         User user = new User();
         user.setEmail(request.getEmail());
-        user.setUsername(request.getUsername());
         user.setPassword(request.getPassword()); // UserService.register() 안에서 encode 처리됨.
 
         userService.register(user);
