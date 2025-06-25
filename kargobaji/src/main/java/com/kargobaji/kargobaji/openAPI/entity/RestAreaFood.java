@@ -20,5 +20,4 @@ public class RestAreaFood {
     private String stdRestNm;
     private String foodNm;
     private String foodCost;
-
 }

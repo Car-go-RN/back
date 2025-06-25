@@ -19,10 +19,9 @@ public class JwtUtil {
 
     private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24;
 
-
-    public String createToken(String email) {
+    public String createToken(String username) {
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(username)
                 .setIssuer(issuer)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
@@ -30,8 +29,7 @@ public class JwtUtil {
                 .compact();
     }
 
-
-    public String validateAndGetEmail(String token) {
+    public String validateAndGetUsername(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)

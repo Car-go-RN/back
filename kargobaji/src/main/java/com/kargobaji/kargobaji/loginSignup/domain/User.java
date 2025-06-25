@@ -21,7 +21,6 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(nullable = false)
     private String password;
 
     private String email;

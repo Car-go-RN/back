@@ -2,6 +2,8 @@ package com.kargobaji.kargobaji.openAPI.repository;
 
 import com.kargobaji.kargobaji.openAPI.entity.RestArea;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,4 +18,45 @@ public interface RestAreaRepository extends JpaRepository<RestArea, Long> {
 
     // 중복된 휴게소 이름일 경우엔 id값이 가장 작은 데이터를 조회
     Optional<RestArea> findFirstByRestAreaNmOrderByIdAsc(String restAreaNm);
+
+    // 전체 조회
+    @Query("SELECT r FROM RestArea r")
+    List<RestArea> findAllRestAreas();
+
+    // 브랜드만 필터
+    @Query("""
+        SELECT r FROM RestArea r
+        WHERE r.stdRestNm IN (
+            SELECT b.stdRestNm FROM RestAreaBrand b
+            WHERE b.brdName IN :brands
+        )
+    """)
+    List<RestArea> findByBrands(@Param("brands") List<String> brands);
+
+    // 편의시설만 필터
+    @Query("""
+        SELECT r FROM RestArea r
+        WHERE r.stdRestNm IN (
+            SELECT f.stdRestNm FROM RestAreaFacility f
+            WHERE f.psName IN :facilities
+        )
+    """)
+    List<RestArea> findByFacilities(@Param("facilities") List<String> facilities);
+
+    // 브랜드 + 편의시설 모두 필터
+    @Query("""
+        SELECT r FROM RestArea r
+        WHERE r.stdRestNm IN (
+            SELECT b.stdRestNm FROM RestAreaBrand b WHERE b.brdName IN :brands
+        )
+        AND r.stdRestNm IN (
+            SELECT f.stdRestNm FROM RestAreaFacility f WHERE f.psName IN :facilities
+        )
+    """)
+    List<RestArea> findByBrandsAndFacilities(
+            @Param("brands") List<String> brands,
+            @Param("facilities") List<String> facilities
+    );
+
+    //
 }

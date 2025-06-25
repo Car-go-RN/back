@@ -16,7 +16,6 @@ public class FavoriteResponse {
     private Long id;
     private Long user;
     private Long restArea;
-    private LocalDateTime createdDate;
     private String restAreaNm;
     private String message;
 
@@ -25,7 +24,6 @@ public class FavoriteResponse {
                 favorite.getId(),
                 favorite.getUser().getId(),
                 favorite.getRestArea().getId(),
-                favorite.getCreatedDate(),
                 favorite.getRestArea().getRestAreaNm(),
                 message
         );

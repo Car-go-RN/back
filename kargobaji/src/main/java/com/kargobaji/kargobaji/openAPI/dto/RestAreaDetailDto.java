@@ -27,6 +27,8 @@ public class RestAreaDetailDto {
     private Double longitude;
     private String restAreaNm;
 
+    private String distance;
+
     private List<String> brands;
     private List<String> facilities;
     private List<FoodDto> foods;
