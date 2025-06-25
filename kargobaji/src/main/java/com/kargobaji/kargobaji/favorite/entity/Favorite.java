@@ -7,9 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-
-import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -29,6 +26,9 @@ public class Favorite {
     @JoinColumn(name = "restArea_id")
     private RestArea restArea;
 
-    @CreatedDate
-    private LocalDateTime createdDate;
+    @Builder
+    public Favorite(User user, RestArea restArea) {
+        this.user = user;
+        this.restArea = restArea;
+    }
 }

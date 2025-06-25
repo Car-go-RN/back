@@ -27,5 +27,4 @@ public class Like {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restArea_id")
     private RestArea restArea;
-
 }

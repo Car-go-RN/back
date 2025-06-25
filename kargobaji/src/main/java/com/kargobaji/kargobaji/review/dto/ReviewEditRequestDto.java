@@ -21,6 +21,8 @@ public class ReviewEditRequestDto {
     @Min(value = 1, message = "벌점은 1점 이상여야 합니다.")
     private int grade;
 
+    private Long userId;
+
     private LocalDateTime editTime;
 
     public void editToEntity(Review review){

@@ -1,6 +1,7 @@
 package com.kargobaji.kargobaji.like;
 
 import com.kargobaji.kargobaji.like.dto.LikeResponse;
+import com.kargobaji.kargobaji.openAPI.dto.RestAreaDetailDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,8 +35,8 @@ public class LikeController {
 
     // 유저가 좋아요한 휴게소 이름값(stdRestNm) 조회
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<String>> getFavoriteRestAreaId(@PathVariable Long userId){
-        List<String> restArea = likeService.getLikeUser(userId);
-        return ResponseEntity.ok(restArea);
+    public ResponseEntity<List<RestAreaDetailDto>> getLikeRestAreas(@PathVariable Long userId){
+        List<RestAreaDetailDto> restAreas = likeService.getLikeUser(userId);
+        return ResponseEntity.ok(restAreas);
     }
 }

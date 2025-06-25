@@ -54,8 +54,10 @@ public class OpenApiController {
     @GetMapping("/detail")
     public ResponseEntity<List<RestAreaDetailDto>> getRestAreaDetail(
             @RequestParam(required = false) String stdRestNm,
-            @RequestParam(defaultValue = "1") int page) {
-        List<RestAreaDetailDto> detailDtos = openApiManager.getRestAreaDetail(stdRestNm, page);
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false) Double currentLat,
+            @RequestParam(required = false) Double currentLng) {
+        List<RestAreaDetailDto> detailDtos = openApiManager.getRestAreaDetail(stdRestNm, page, currentLat, currentLng);
         return ResponseEntity.ok(detailDtos);
     }
 }

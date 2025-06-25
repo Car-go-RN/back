@@ -1,6 +1,7 @@
 package com.kargobaji.kargobaji.favorite;
 
 import com.kargobaji.kargobaji.favorite.dto.FavoriteResponse;
+import com.kargobaji.kargobaji.openAPI.dto.RestAreaDetailDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +27,8 @@ public class FavoriteController {
 
     // 유저가 즐겨찾기한 휴게소 이름값(stdRestNm) 조회
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<String>> getFavoriteRestAreaId(@PathVariable Long userId){
-        List<String> restArea = favoriteService.getFavoriteUser(userId);
-        return ResponseEntity.ok(restArea);
+    public ResponseEntity<List<RestAreaDetailDto>> getFavoriteRestAreas(@PathVariable Long userId){
+        List<RestAreaDetailDto> restAreas = favoriteService.getFavoriteUser(userId);
+        return ResponseEntity.ok(restAreas);
     }
 }

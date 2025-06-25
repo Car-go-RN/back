@@ -26,8 +26,16 @@ public class ReviewService {
     private final UserRepository userRepository;
 
     // 리뷰 생성
-    @Transactional // 트랜잭션 체크
-    public ReviewResponseDto createReview(ReviewRequestDto requestDto, String restAreaNm){
+    @Transactional
+    public ReviewResponseDto createReview(ReviewRequestDto requestDto, String restAreaNm) {
+        if (requestDto.getUserId() == null) {
+            throw new IllegalArgumentException("사용자 ID는 필수입니다.");
+        }
+
+        if (requestDto.getGrade() < 1 || requestDto.getGrade() > 5) {
+            throw new IllegalArgumentException("별점은 1~5 사이의 값으로 지정해주세요.");
+        }
+
         RestArea restArea = restAreaRepository
                 .findFirstByRestAreaNmOrderByIdAsc(restAreaNm)
                 .orElseThrow(() -> new IllegalArgumentException("휴게소가 존재하지 않습니다."));
@@ -72,8 +80,24 @@ public class ReviewService {
     // 리뷰 수정
     @Transactional
     public ReviewResponseDto editReview(ReviewEditRequestDto reviewEditRequestDto, Long id){
+        if (reviewEditRequestDto.getUserId() == null) {
+            throw new IllegalArgumentException("사용자 ID는 필수입니다.");
+        }
+
+        User user = userRepository.findById(reviewEditRequestDto.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다."));
+
+        Long requestUserId = reviewEditRequestDto.getUserId();
+        if (!review.getUser().getId().equals(requestUserId)) {
+            throw new SecurityException("본인의 리뷰만 수정할 수 있습니다.");
+        }
+
+        if (reviewEditRequestDto.getGrade() < 1 || reviewEditRequestDto.getGrade() > 5) {
+            throw new IllegalArgumentException("별점은 1~5 사이의 값으로 지정해주세요.");
+        }
 
         reviewEditRequestDto.editToEntity(review);
         return ReviewResponseDto.fromEntity(review);

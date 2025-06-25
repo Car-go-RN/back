@@ -1,5 +1,11 @@
 package com.kargobaji.kargobaji.favorite;
 
+import com.kargobaji.kargobaji.openAPI.dto.RestAreaDetailDto;
+import com.kargobaji.kargobaji.openAPI.entity.RestAreaBrand;
+import com.kargobaji.kargobaji.openAPI.entity.RestAreaFacility;
+import com.kargobaji.kargobaji.openAPI.repository.RestAreaBrandRepository;
+import com.kargobaji.kargobaji.openAPI.repository.RestAreaFacilityRepository;
+import com.kargobaji.kargobaji.openAPI.repository.RestAreaFoodRepository;
 import com.kargobaji.kargobaji.loginSignup.domain.User;
 import com.kargobaji.kargobaji.favorite.dto.FavoriteResponse;
 import com.kargobaji.kargobaji.favorite.entity.Favorite;
@@ -12,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +25,10 @@ public class FavoriteService {
     private final FavoriteRepository favoriteRepository;
     private final UserRepository userRepository;
     private final RestAreaRepository restAreaRepository;
+
+    private final RestAreaBrandRepository restAreaBrandRepository;
+    private final RestAreaFoodRepository restAreaFoodRepository;
+    private final RestAreaFacilityRepository restAreaFacilityRepository;
 
     // 즐겨찾기 생성/삭제
     @Transactional
@@ -52,16 +61,48 @@ public class FavoriteService {
         return FavoriteResponse.fromEntity(savedFavorite, "즐겨찾기 추가 성공");
     }
 
-    // 해당 유저(id)의 즐겨찾기한 휴게소 이름(stdRestNm) 가져오기
+    // 해당 유저(id)의 즐겨찾기한 휴게소 가져오기
     @Transactional
-    public List<String> getFavoriteUser(Long userId){
+    public List<RestAreaDetailDto> getFavoriteUser(Long userId){
+        // 유저 유효성 검사
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
 
+        // 즐겨찾기 목록 조회
         List<Favorite> favorites = favoriteRepository.findByUserId(userId);
 
-        return favorites.stream()
-                .map(favorite -> favorite.getRestArea().getStdRestNm())
-                .collect(Collectors.toList());
+        // 즐겨찾기된 휴게소들 가져오기
+        List<RestArea> restAreas = favorites.stream()
+                .map(Favorite::getRestArea)
+                .toList();
+
+        // 각 휴게소에 대한 상세 정보 생성
+        return restAreas.stream().map(restArea -> {
+            List<String> brands = restAreaBrandRepository.findByStdRestNm(restArea.getStdRestNm())
+                    .stream().map(RestAreaBrand::getBrdName).toList();
+
+            List<String> facilities = restAreaFacilityRepository.findByStdRestNm(restArea.getStdRestNm())
+                    .stream().map(RestAreaFacility::getPsName).toList();
+
+            List<RestAreaDetailDto.FoodDto> foods = restAreaFoodRepository.findByStdRestNm(restArea.getStdRestNm())
+                    .stream().map(f -> new RestAreaDetailDto.FoodDto(f.getFoodNm(), f.getFoodCost()))
+                    .toList();
+
+            return RestAreaDetailDto.builder()
+                    .id(restArea.getId())
+                    .stdRestNm(restArea.getStdRestNm())
+                    .gasolinePrice(restArea.getGasolinePrice())
+                    .diselPrice(restArea.getDiselPrice())
+                    .lpgPrice(restArea.getLpgPrice())
+                    .roadAddress(restArea.getRoadAddress())
+                    .phone(restArea.getPhone())
+                    .latitude(restArea.getLatitude())
+                    .longitude(restArea.getLongitude())
+                    .restAreaNm(restArea.getRestAreaNm())
+                    .brands(brands)
+                    .facilities(facilities)
+                    .foods(foods)
+                    .build();
+        }).toList();
     }
 }

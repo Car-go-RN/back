@@ -1,6 +1,7 @@
 package com.kargobaji.kargobaji.openAPI;
 
 
+import com.kargobaji.kargobaji.openAPI.distance.DistanceService;
 import com.kargobaji.kargobaji.openAPI.dto.RestAreaDetailDto;
 import com.kargobaji.kargobaji.openAPI.entity.*;
 import com.kargobaji.kargobaji.openAPI.repository.*;
@@ -30,6 +31,8 @@ public class OpenApiManager {
     private final RestAreaFacilityRepository restAreaFacilityRepository;
     private final RestAreaFoodRepository restAreaFoodRepository;
     private final RestAreaRepository restAreaRepository;
+
+    private final DistanceService distanceService;
 
     private String BASE_URL = "https://data.ex.co.kr/openapi";
 
@@ -305,10 +308,6 @@ public class OpenApiManager {
                     for (String key : filters.keySet()) {
                         String value = filters.get(key);
                         try {
-                            // 리플렉션을 사용하여 동적으로 클래스에 필드(key)에 접근
-                            // 리플렉션 : 동적으로 객체 조작/클래스 정보를 얻는 기능 등을 제공 -> .getClass(), .getDeclaredField()
-                            // .getClass() : 실제 클래스의 정보를 확인(클래스에 정의된 필드 메서드 접근 할 때 사용)
-                            // .getDeclaredField() : 클래스의 특정 필드에 대한 정보를 동적으로 가져오는 메소드 (접근 제어자(public, private, protected) 영향 없음)
                             Field field = entity.getClass().getDeclaredField(key);
                             field.setAccessible(true); // 해당 메소드가 private이기 때문에 field에게 접근 권한을 줌.
                             Object fieldValue = field.get(entity); // 해당 필드 값을 동적으로 가져옴.
@@ -357,7 +356,7 @@ public class OpenApiManager {
     }
 
     // 휴게소 상세 정보 가져오기
-    public List<RestAreaDetailDto> getRestAreaDetail(String stdRestNm, int page) {
+    public List<RestAreaDetailDto> getRestAreaDetail(String stdRestNm, int page, Double currentLat, Double currentLng) {
         List<RestArea> restAreas;
 
         // 15개씩 출력 (이름 없을 시)
@@ -386,6 +385,27 @@ public class OpenApiManager {
                     .stream().map(f -> new RestAreaDetailDto.FoodDto(f.getFoodNm(), f.getFoodCost()))
                     .toList();
 
+            String distanceStr = null;
+
+            if(stdRestNm != null & currentLat != null && currentLng != null){
+                try{
+                    Map<String, Object> distInfo = distanceService.calculateDistance(currentLat, currentLng, restArea.getStdRestNm());
+                    Integer distanceKm = (Integer) distInfo.get("distanceKm");
+                    double rawKm = distanceKm.doubleValue();
+
+                    // 1Km 미만은 소수점 1자리, 이상은 정수로 표시
+                    if(rawKm < 1.0){
+                        distanceStr = String.format("%.1fkm", rawKm);
+                    }
+                    else {
+                        distanceStr = String.format("%.0fkm", rawKm);
+                    }
+                }
+                catch (Exception e){
+                    throw new RuntimeException("거리 계산 실패: " + e.getMessage());
+                }
+            }
+
             return RestAreaDetailDto.builder()
                     .id(restArea.getId())
                     .stdRestNm(restArea.getStdRestNm())
@@ -400,10 +420,10 @@ public class OpenApiManager {
                     .brands(brands)
                     .facilities(facilities)
                     .foods(foods)
+                    .distance(distanceStr)
                     .build();
         }).toList();
     }
-
 }
 
 

@@ -23,6 +23,8 @@ public class ReviewResponseDto {
 
     private Long userId;
 
+    private Long restAreaId;
+
     public static ReviewResponseDto fromEntity(Review review){
         return new ReviewResponseDto(
                 review.getId(),
@@ -30,7 +32,8 @@ public class ReviewResponseDto {
                 review.getGrade(),
                 review.getCreateTime(),
                 review.getEditTime(),
-                review.getUser().getId()
+                review.getUser().getId(),
+                review.getRestArea().getId()
         );
 
     }

@@ -5,7 +5,6 @@ import com.kargobaji.kargobaji.review.dto.ReviewListResponseDto;
 import com.kargobaji.kargobaji.review.dto.ReviewRequestDto;
 import com.kargobaji.kargobaji.review.dto.ReviewResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,17 +48,17 @@ public class ReviewController {
         return ResponseEntity.ok(reviews);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{reviewId}")
     public ResponseEntity<ReviewResponseDto> editReview(
-            @PathVariable Long id,
+            @PathVariable Long reviewId,
             @RequestBody ReviewEditRequestDto reviewEditRequestDto){
-        ReviewResponseDto reviewResponseDto = reviewService.editReview(reviewEditRequestDto, id);
+        ReviewResponseDto reviewResponseDto = reviewService.editReview(reviewEditRequestDto, reviewId);
         return ResponseEntity.ok(reviewResponseDto);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteReview(@PathVariable Long id){
-        reviewService.deleteReview(id);
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<String> deleteReview(@PathVariable Long reviewId){
+        reviewService.deleteReview(reviewId);
         return ResponseEntity.ok("리뷰 삭제 성공");
     }
 }
