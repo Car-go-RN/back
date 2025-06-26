@@ -13,6 +13,15 @@ java {
 	}
 }
 
+springBoot {
+	mainClass = 'com.kargobaji.kargobaji.KargobajiApplication'
+}
+
+bootJar {
+	archiveFileName = 'kargobaji.main.jar'
+}
+
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor

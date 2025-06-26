@@ -28,6 +28,9 @@
         private String diselPrice; // 경유
         private String lpgPrice; // LPG
 
+        private String electric; // 전기 충전소 여부
+        private String hydrogen; // 수소 충전소 여부
+
         private String roadAddress;
         private String phone;
         private Double latitude; // 위도 (y)

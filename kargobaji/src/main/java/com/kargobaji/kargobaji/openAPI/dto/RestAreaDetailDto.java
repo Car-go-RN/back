@@ -21,6 +21,8 @@ public class RestAreaDetailDto {
     private String gasolinePrice;
     private String diselPrice;
     private String lpgPrice;
+    private String electric; // 전기 충전소 여부
+    private String hydrogen; // 수소 충전소 여부
     private String roadAddress;
     private String phone;
     private Double latitude;

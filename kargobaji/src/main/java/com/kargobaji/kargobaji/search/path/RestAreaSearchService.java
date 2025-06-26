@@ -101,6 +101,8 @@ public class RestAreaSearchService {
                 .gasolinePrice(restArea.getGasolinePrice())
                 .diselPrice(restArea.getDiselPrice())
                 .lpgPrice(restArea.getLpgPrice())
+                .electric(restArea.getElectric())
+                .hydrogen(restArea.getHydrogen())
                 .roadAddress(restArea.getRoadAddress())
                 .phone(restArea.getPhone())
                 .latitude(restArea.getLatitude())
