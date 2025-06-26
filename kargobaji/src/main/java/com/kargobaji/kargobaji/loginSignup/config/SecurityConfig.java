@@ -17,6 +17,7 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -25,10 +26,11 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/register").permitAll()
-                        .requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/api/email/**").permitAll()
-                        .requestMatchers("/open-api/**").permitAll()
+//                        .requestMatchers("/api/users/register").permitAll()
+//                        .requestMatchers("/api/auth/login").permitAll()
+//                        .requestMatchers("/api/email/**").permitAll()
+//                        .requestMatchers("/open-api/**").permitAll()
+                                .requestMatchers("/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 );
