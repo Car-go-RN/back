@@ -58,5 +58,14 @@ public interface RestAreaRepository extends JpaRepository<RestArea, Long> {
             @Param("facilities") List<String> facilities
     );
 
-    //
+    // 전기, 수소, LPG 조건 필터
+    @Query("""
+        SELECT r FROM RestArea r
+        WHERE (:hasElectric IS NULL OR r.electric = 'O')
+          AND (:hasHydrogen IS NULL OR r.hydrogen = 'O')
+          AND (:hasLpg IS NULL OR r.lpgPrice IS NOT NULL)
+    """)
+    List<RestArea> findByGases(@Param("hasElectric") Boolean hasElectric,
+                               @Param("hasHydrogen") Boolean hasHydrogen,
+                               @Param("hasLpg") Boolean hasLpg);
 }

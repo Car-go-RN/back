@@ -17,24 +17,85 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SearchService {
+
     private final RestAreaRepository restAreaRepository;
     private final RestAreaBrandRepository brandRepository;
     private final RestAreaFacilityRepository facilityRepository;
     private final RestAreaFoodRepository foodRepository;
 
-    public List<RestAreaDetailDto> getRestAreasByFilter(List<String> brands, List<String> facilities) {
+    public List<RestAreaDetailDto> getRestAreasByFilter(List<String> brands, List<String> facilities, List<String> gases) {
         List<RestArea> filtered;
 
-        if ((brands == null || brands.isEmpty()) && (facilities == null || facilities.isEmpty())) {
+        boolean hasBrands = brands != null && !brands.isEmpty();
+        boolean hasFacilities = facilities != null && !facilities.isEmpty();
+        boolean hasGases = gases != null && !gases.isEmpty();
+
+        // gases 리스트 파싱
+        Boolean hasElectric = null;
+        Boolean hasHydrogen = null;
+        Boolean hasLpg = null;
+        if (hasGases) {
+            hasElectric = gases.contains("전기") ? true : null;
+            hasHydrogen = gases.contains("수소") ? true : null;
+            hasLpg = gases.contains("lpg") ? true : null;
+        }
+
+        // [1] a X, b X, c X → 전체
+        if (!hasBrands && !hasFacilities && !hasGases) {
             filtered = restAreaRepository.findAllRestAreas();
-        } else if (brands == null || brands.isEmpty()) {
-            filtered = restAreaRepository.findByFacilities(facilities);
-        } else if (facilities == null || facilities.isEmpty()) {
+        }
+
+        // [2] a O, b X, c X
+        else if (hasBrands && !hasFacilities && !hasGases) {
             filtered = restAreaRepository.findByBrands(brands);
-        } else {
+        }
+
+        // [3] a X, b O, c X
+        else if (!hasBrands && hasFacilities && !hasGases) {
+            filtered = restAreaRepository.findByFacilities(facilities);
+        }
+
+        // [4] a X, b X, c O
+        else if (!hasBrands && !hasFacilities && hasGases) {
+            filtered = restAreaRepository.findByGases(hasElectric, hasHydrogen, hasLpg);
+        }
+
+        // [5] a O, b O, c X
+        else if (hasBrands && hasFacilities && !hasGases) {
             filtered = restAreaRepository.findByBrandsAndFacilities(brands, facilities);
         }
 
+        // [6] a O, b X, c O
+        else if (hasBrands && !hasFacilities && hasGases) {
+            final Boolean electric = hasElectric;
+            final Boolean hydrogen = hasHydrogen;
+            final Boolean lpg = hasLpg;
+            filtered = restAreaRepository.findByBrands(brands).stream()
+                    .filter(r -> matchGases(r, electric, hydrogen, lpg))
+                    .toList();
+        }
+
+        // [7] a X, b O, c O
+        else if (!hasBrands && hasFacilities && hasGases) {
+            final Boolean electric = hasElectric;
+            final Boolean hydrogen = hasHydrogen;
+            final Boolean lpg = hasLpg;
+            filtered = restAreaRepository.findByFacilities(facilities).stream()
+                    .filter(r -> matchGases(r, electric, hydrogen, lpg))
+                    .toList();
+        }
+
+        // [8] a O, b O, c O
+        else {
+            final Boolean electric = hasElectric;
+            final Boolean hydrogen = hasHydrogen;
+            final Boolean lpg = hasLpg;
+            filtered = restAreaRepository.findByBrandsAndFacilities(brands, facilities).stream()
+                    .filter(r -> matchGases(r, electric, hydrogen, lpg))
+                    .toList();
+        }
+
+        // 결과를 DTO로 변환
         return filtered.stream().map(restArea -> {
             List<String> brandList = brandRepository.findByStdRestNm(restArea.getStdRestNm())
                     .stream().map(RestAreaBrand::getBrdName).toList();
@@ -53,6 +114,8 @@ public class SearchService {
                     .gasolinePrice(restArea.getGasolinePrice())
                     .diselPrice(restArea.getDiselPrice())
                     .lpgPrice(restArea.getLpgPrice())
+                    .electric(restArea.getElectric())
+                    .hydrogen(restArea.getHydrogen())
                     .roadAddress(restArea.getRoadAddress())
                     .phone(restArea.getPhone())
                     .latitude(restArea.getLatitude())
@@ -65,4 +128,9 @@ public class SearchService {
         }).toList();
     }
 
+    private boolean matchGases(RestArea r, Boolean electric, Boolean hydrogen, Boolean lpg) {
+        return (electric == null || "O".equals(r.getElectric())) &&
+                (hydrogen == null || "O".equals(r.getHydrogen())) &&
+                (lpg == null || r.getLpgPrice() != null);
+    }
 }

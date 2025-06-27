@@ -8,6 +8,7 @@
     import lombok.Builder;
     import lombok.Data;
     import lombok.NoArgsConstructor;
+    import org.hibernate.annotations.ColumnDefault;
 
     import java.util.ArrayList;
     import java.util.List;
@@ -28,7 +29,7 @@
         private String diselPrice; // 경유
         private String lpgPrice; // LPG
 
-        private String electric; // 전기 충전소 여부
+        private String electric;// 전기 충전소 여부
         private String hydrogen; // 수소 충전소 여부
 
         private String roadAddress;
