@@ -47,12 +47,12 @@ public class SearchService {
 
         // [2] a O, b X, c X
         else if (hasBrands && !hasFacilities && !hasGases) {
-            filtered = restAreaRepository.findByBrands(brands);
+            filtered = restAreaRepository.findByBrands(brands, brands.size());
         }
 
         // [3] a X, b O, c X
         else if (!hasBrands && hasFacilities && !hasGases) {
-            filtered = restAreaRepository.findByFacilities(facilities);
+            filtered = restAreaRepository.findByFacilities(facilities, facilities.size());
         }
 
         // [4] a X, b X, c O
@@ -62,7 +62,7 @@ public class SearchService {
 
         // [5] a O, b O, c X
         else if (hasBrands && hasFacilities && !hasGases) {
-            filtered = restAreaRepository.findByBrandsAndFacilities(brands, facilities);
+            filtered = restAreaRepository.findByBrandsAndFacilities(brands, brands.size(), facilities, facilities.size());
         }
 
         // [6] a O, b X, c O
@@ -70,7 +70,7 @@ public class SearchService {
             final Boolean electric = hasElectric;
             final Boolean hydrogen = hasHydrogen;
             final Boolean lpg = hasLpg;
-            filtered = restAreaRepository.findByBrands(brands).stream()
+            filtered = restAreaRepository.findByBrands(brands, brands.size()).stream()
                     .filter(r -> matchGases(r, electric, hydrogen, lpg))
                     .toList();
         }
@@ -80,7 +80,7 @@ public class SearchService {
             final Boolean electric = hasElectric;
             final Boolean hydrogen = hasHydrogen;
             final Boolean lpg = hasLpg;
-            filtered = restAreaRepository.findByFacilities(facilities).stream()
+            filtered = restAreaRepository.findByFacilities(facilities, facilities.size()).stream()
                     .filter(r -> matchGases(r, electric, hydrogen, lpg))
                     .toList();
         }
@@ -90,7 +90,7 @@ public class SearchService {
             final Boolean electric = hasElectric;
             final Boolean hydrogen = hasHydrogen;
             final Boolean lpg = hasLpg;
-            filtered = restAreaRepository.findByBrandsAndFacilities(brands, facilities).stream()
+            filtered = restAreaRepository.findByBrandsAndFacilities(brands, brands.size(), facilities, facilities.size()).stream()
                     .filter(r -> matchGases(r, electric, hydrogen, lpg))
                     .toList();
         }
