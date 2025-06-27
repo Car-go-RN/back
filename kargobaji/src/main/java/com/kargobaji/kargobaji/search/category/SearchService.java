@@ -23,7 +23,10 @@ public class SearchService {
     private final RestAreaFacilityRepository facilityRepository;
     private final RestAreaFoodRepository foodRepository;
 
-    public List<RestAreaDetailDto> getRestAreasByFilter(List<String> brands, List<String> facilities, List<String> gases) {
+    public List<RestAreaDetailDto> getRestAreasByFilter(List<String> brands, List<String> facilities, List<String> gases, int page) {
+        int pageSize = 15;
+        int offset = (Math.max(page, 1) - 1) * pageSize;
+
         List<RestArea> filtered;
 
         boolean hasBrands = brands != null && !brands.isEmpty();
@@ -94,41 +97,46 @@ public class SearchService {
                     .filter(r -> matchGases(r, electric, hydrogen, lpg))
                     .toList();
         }
+        
+        // 결과를 DTO로 변환 + 페이지네이션 적용
+        return filtered.stream()
+                .skip(offset)
+                .limit(pageSize)
+                .map(restArea -> {
+                    List<String> brandList = brandRepository.findByStdRestNm(restArea.getStdRestNm())
+                            .stream().map(RestAreaBrand::getBrdName).toList();
 
-        // 결과를 DTO로 변환
-        return filtered.stream().map(restArea -> {
-            List<String> brandList = brandRepository.findByStdRestNm(restArea.getStdRestNm())
-                    .stream().map(RestAreaBrand::getBrdName).toList();
+                    List<String> facilityList = facilityRepository.findByStdRestNm(restArea.getStdRestNm())
+                            .stream().map(RestAreaFacility::getPsName).toList();
 
-            List<String> facilityList = facilityRepository.findByStdRestNm(restArea.getStdRestNm())
-                    .stream().map(RestAreaFacility::getPsName).toList();
+                    List<RestAreaFood> foodList = foodRepository.findByStdRestNm(restArea.getStdRestNm());
+                    List<RestAreaDetailDto.FoodDto> foodDtos = foodList.stream()
+                            .map(food -> new RestAreaDetailDto.FoodDto(food.getFoodNm(), food.getFoodCost()))
+                            .toList();
 
-            List<RestAreaFood> foodList = foodRepository.findByStdRestNm(restArea.getStdRestNm());
-            List<RestAreaDetailDto.FoodDto> foodDtos = foodList.stream()
-                    .map(food -> new RestAreaDetailDto.FoodDto(food.getFoodNm(), food.getFoodCost()))
-                    .toList();
-
-            return RestAreaDetailDto.builder()
-                    .id(restArea.getId())
-                    .stdRestNm(restArea.getStdRestNm())
-                    .gasolinePrice(restArea.getGasolinePrice())
-                    .diselPrice(restArea.getDiselPrice())
-                    .lpgPrice(restArea.getLpgPrice())
-                    .electric(restArea.getElectric())
-                    .hydrogen(restArea.getHydrogen())
-                    .roadAddress(restArea.getRoadAddress())
-                    .phone(restArea.getPhone())
-                    .latitude(restArea.getLatitude())
-                    .longitude(restArea.getLongitude())
-                    .restAreaNm(restArea.getRestAreaNm())
-                    .brands(brandList)
-                    .facilities(facilityList)
-                    .foods(foodDtos)
-                    .build();
-        }).toList();
+                    return RestAreaDetailDto.builder()
+                            .id(restArea.getId())
+                            .stdRestNm(restArea.getStdRestNm())
+                            .gasolinePrice(restArea.getGasolinePrice())
+                            .diselPrice(restArea.getDiselPrice())
+                            .lpgPrice(restArea.getLpgPrice())
+                            .electric(restArea.getElectric())
+                            .hydrogen(restArea.getHydrogen())
+                            .roadAddress(restArea.getRoadAddress())
+                            .phone(restArea.getPhone())
+                            .latitude(restArea.getLatitude())
+                            .longitude(restArea.getLongitude())
+                            .restAreaNm(restArea.getRestAreaNm())
+                            .brands(brandList)
+                            .facilities(facilityList)
+                            .foods(foodDtos)
+                            .build();
+                })
+                .toList();
     }
 
-    private boolean matchGases(RestArea r, Boolean electric, Boolean hydrogen, Boolean lpg) {
+
+        private boolean matchGases(RestArea r, Boolean electric, Boolean hydrogen, Boolean lpg) {
         return (electric == null || "O".equals(r.getElectric())) &&
                 (hydrogen == null || "O".equals(r.getHydrogen())) &&
                 (lpg == null || r.getLpgPrice() != null);

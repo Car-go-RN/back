@@ -26,9 +26,10 @@ public class SearchController {
     public ResponseEntity<List<RestAreaDetailDto>> filterRestAreas(
             @RequestParam(required = false) List<String> brands,
             @RequestParam(required = false) List<String> facilities,
-            @RequestParam(required = false) List<String> gases
+            @RequestParam(required = false) List<String> gases,
+            @RequestParam(defaultValue = "1") int page
     ) {
-        List<RestAreaDetailDto> result = searchService.getRestAreasByFilter(brands, facilities, gases);
+        List<RestAreaDetailDto> result = searchService.getRestAreasByFilter(brands, facilities, gases, page);
         return ResponseEntity.ok(result);
     }
 
