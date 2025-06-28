@@ -27,9 +27,11 @@ public class SearchController {
             @RequestParam(required = false) List<String> brands,
             @RequestParam(required = false) List<String> facilities,
             @RequestParam(required = false) List<String> gases,
-            @RequestParam(defaultValue = "1") int page
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false) Double currentLat,
+            @RequestParam(required = false) Double currentLng
     ) {
-        List<RestAreaDetailDto> result = searchService.getRestAreasByFilter(brands, facilities, gases, page);
+        List<RestAreaDetailDto> result = searchService.getRestAreasByFilter(brands, facilities, gases, page, currentLat, currentLng);
         return ResponseEntity.ok(result);
     }
 

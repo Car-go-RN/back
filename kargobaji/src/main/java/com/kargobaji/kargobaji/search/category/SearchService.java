@@ -1,5 +1,6 @@
 package com.kargobaji.kargobaji.search.category;
 
+import com.kargobaji.kargobaji.openAPI.distance.DistanceService;
 import com.kargobaji.kargobaji.openAPI.dto.RestAreaDetailDto;
 import com.kargobaji.kargobaji.openAPI.entity.RestArea;
 import com.kargobaji.kargobaji.openAPI.entity.RestAreaBrand;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +25,10 @@ public class SearchService {
     private final RestAreaFacilityRepository facilityRepository;
     private final RestAreaFoodRepository foodRepository;
 
-    public List<RestAreaDetailDto> getRestAreasByFilter(List<String> brands, List<String> facilities, List<String> gases, int page) {
+    private final DistanceService distanceService;
+
+    public List<RestAreaDetailDto> getRestAreasByFilter(List<String> brands, List<String> facilities, List<String> gases,
+                                                        int page, Double currentLat, Double currentLng) {
         int pageSize = 15;
         int offset = (Math.max(page, 1) - 1) * pageSize;
 
@@ -97,7 +102,7 @@ public class SearchService {
                     .filter(r -> matchGases(r, electric, hydrogen, lpg))
                     .toList();
         }
-        
+
         // 결과를 DTO로 변환 + 페이지네이션 적용
         return filtered.stream()
                 .skip(offset)
@@ -113,6 +118,23 @@ public class SearchService {
                     List<RestAreaDetailDto.FoodDto> foodDtos = foodList.stream()
                             .map(food -> new RestAreaDetailDto.FoodDto(food.getFoodNm(), food.getFoodCost()))
                             .toList();
+
+                    String distanceStr = null;
+                    try{
+                        Map<String, Object> distInfo = distanceService.calculateDistance(currentLat, currentLng, restArea.getStdRestNm());
+                        Integer distanceKm = (Integer) distInfo.get("distanceKm");
+                        double rawKm = distanceKm.doubleValue();
+
+                        if(rawKm < 1.0){
+                            distanceStr = String.format("%.1fkm", rawKm);
+                        }
+                        else {
+                            distanceStr = String.format("%.0fkm", rawKm);
+                        }
+                    }
+                    catch (Exception e){
+                        throw new RuntimeException("거리 계산 실패 : " + e.getMessage());
+                    }
 
                     return RestAreaDetailDto.builder()
                             .id(restArea.getId())
@@ -130,6 +152,7 @@ public class SearchService {
                             .brands(brandList)
                             .facilities(facilityList)
                             .foods(foodDtos)
+                            .distance(distanceStr)
                             .build();
                 })
                 .toList();
