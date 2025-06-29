@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class SearchService {
+public class CategorySearchService {
 
     private final RestAreaRepository restAreaRepository;
     private final RestAreaBrandRepository brandRepository;

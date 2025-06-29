@@ -34,7 +34,7 @@ public class AuthController {
 
         userService.authenticate(request.getEmail(), request.getPassword());
         String token = jwtUtil.createToken(request.getEmail());
-        return ResponseEntity.ok(new LoginResponseDto(userId, email, token));
+        return ResponseEntity.ok(new LoginResponseDto(userId, token));
     }
 
     // 비밀번호 재설정 링크 전송

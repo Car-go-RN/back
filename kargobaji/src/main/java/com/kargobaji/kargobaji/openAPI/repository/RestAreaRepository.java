@@ -82,4 +82,17 @@ public interface RestAreaRepository extends JpaRepository<RestArea, Long> {
     List<RestArea> findByGases(@Param("hasElectric") Boolean hasElectric,
                                @Param("hasHydrogen") Boolean hasHydrogen,
                                @Param("hasLpg") Boolean hasLpg);
+
+    @Query(value = """
+        SELECT DISTINCT ra.* FROM rest_area ra
+        LEFT JOIN rest_area_brand b ON ra.std_rest_nm = b.std_rest_nm
+        LEFT JOIN rest_area_facility f ON ra.std_rest_nm = f.std_rest_nm
+        LEFT JOIN rest_area_food food ON ra.std_rest_nm = food.std_rest_nm
+        WHERE ra.rest_area_nm LIKE %:keyword%
+           OR ra.road_address LIKE %:keyword%
+           OR b.brd_name LIKE %:keyword%
+           OR f.ps_name LIKE %:keyword%
+           OR food.food_nm LIKE %:keyword%
+    """, nativeQuery = true)
+    List<RestArea> searchByKeyword(@Param("keyword") String keyword);
 }
