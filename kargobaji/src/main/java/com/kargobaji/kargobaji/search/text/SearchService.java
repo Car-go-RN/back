@@ -25,10 +25,18 @@ public class SearchService {
     private final RestAreaFoodRepository restAreaFoodRepository;
 
     @Transactional(readOnly = true)
-    public List<RestAreaDetailDto> searchRestAreas(String keyword){
+    public List<RestAreaDetailDto> searchRestAreas(String keyword, int page){
+        int pageSize = 15;
+        int offset = (Math.max(page, 1) - 1) * pageSize;
+
         List<RestArea> restAreas = restAreaRepository.searchByKeyword(keyword);
 
-        return restAreas.stream()
+        List<RestArea> paginated = restAreas.stream()
+                .skip(offset)
+                .limit(pageSize)
+                .toList();
+
+        return paginated.stream()
                 .map(ra -> {
                     List<String> brands = restAreaBrandRepository.findByStdRestNm(ra.getStdRestNm())
                             .stream()

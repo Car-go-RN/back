@@ -26,8 +26,9 @@ public class SearchController {
 
     // 텍스트 검색
     @GetMapping()
-    public ResponseEntity<List<RestAreaDetailDto>> search(@RequestParam("keyword") String keyword){
-        List<RestAreaDetailDto> result = searchService.searchRestAreas(keyword);
+    public ResponseEntity<List<RestAreaDetailDto>> search(@RequestParam("keyword") String keyword,
+                                                            @RequestParam(defaultValue = "1") int page){
+        List<RestAreaDetailDto> result = searchService.searchRestAreas(keyword, page);
         return ResponseEntity.ok(result);
     }
 

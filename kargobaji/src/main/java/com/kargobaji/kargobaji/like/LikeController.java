@@ -26,14 +26,14 @@ public class LikeController {
         return ResponseEntity.ok(response);
     }
 
-//    // 휴게소별 좋아요 수 조회
-//    @GetMapping("/{restAreaId}")
-//    public ResponseEntity<Long> CountRestArea(
-//            @PathVariable Long restAreaId
-//    ){
-//        Long response = likeService.countLikeRestArea(restAreaId);
-//        return ResponseEntity.ok(response);
-//    }
+    // 휴게소별 좋아요 수 조회
+    @GetMapping("/{restAreaId}")
+    public ResponseEntity<Long> CountRestArea(
+            @PathVariable Long restAreaId
+    ){
+        Long response = likeService.countLikeRestArea(restAreaId);
+        return ResponseEntity.ok(response);
+    }
 
     // 유저가 좋아요한 휴게소 이름값(stdRestNm) 조회
     @GetMapping("/user/{userId}")

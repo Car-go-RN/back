@@ -64,12 +64,12 @@ public class LikeService {
         return LikeResponse.fromEntity(savedLike, "좋아요 성공");
     }
 
-//    public Long countLikeRestArea(Long restAreaId){
-//        RestArea restArea = restAreaRepository.findById(restAreaId)
-//                .orElseThrow(() -> new IllegalArgumentException("휴게소가 존재하지 않습니다."));
-//
-//        return likeRepository.countByRestAreaId(restAreaId);
-//    }
+    public Long countLikeRestArea(Long restAreaId){
+        RestArea restArea = restAreaRepository.findById(restAreaId)
+                .orElseThrow(() -> new IllegalArgumentException("휴게소가 존재하지 않습니다."));
+
+        return likeRepository.countByRestAreaId(restAreaId);
+    }
 
 
     @Transactional
