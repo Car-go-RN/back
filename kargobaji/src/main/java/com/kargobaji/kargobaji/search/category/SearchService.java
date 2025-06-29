@@ -139,6 +139,7 @@ public class SearchService {
                     return RestAreaDetailDto.builder()
                             .id(restArea.getId())
                             .stdRestNm(restArea.getStdRestNm())
+                            .reviewAVG(restArea.getReviewAVG())
                             .gasolinePrice(restArea.getGasolinePrice())
                             .diselPrice(restArea.getDiselPrice())
                             .lpgPrice(restArea.getLpgPrice())
@@ -164,4 +165,7 @@ public class SearchService {
                 (hydrogen == null || "O".equals(r.getHydrogen())) &&
                 (lpg == null || r.getLpgPrice() != null);
     }
+
+
+
 }

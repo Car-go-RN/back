@@ -2,6 +2,7 @@ package com.kargobaji.kargobaji.favorite;
 
 import com.kargobaji.kargobaji.favorite.dto.FavoriteResponse;
 import com.kargobaji.kargobaji.openAPI.dto.RestAreaDetailDto;
+import com.kargobaji.kargobaji.openAPI.dto.RestAreaIdDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,5 +31,11 @@ public class FavoriteController {
     public ResponseEntity<List<RestAreaDetailDto>> getFavoriteRestAreas(@PathVariable Long userId){
         List<RestAreaDetailDto> restAreas = favoriteService.getFavoriteUser(userId);
         return ResponseEntity.ok(restAreas);
+    }
+
+    @GetMapping("/check/user/{userId}")
+    public ResponseEntity<List<RestAreaIdDto>> getLikeRestAreaId(@PathVariable Long userId){
+        List<RestAreaIdDto> restAreaIdDtos = favoriteService.getFavoriteUserRestAreaId(userId);
+        return ResponseEntity.ok(restAreaIdDtos);
     }
 }

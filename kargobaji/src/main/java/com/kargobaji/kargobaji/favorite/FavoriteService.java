@@ -1,6 +1,7 @@
 package com.kargobaji.kargobaji.favorite;
 
 import com.kargobaji.kargobaji.openAPI.dto.RestAreaDetailDto;
+import com.kargobaji.kargobaji.openAPI.dto.RestAreaIdDto;
 import com.kargobaji.kargobaji.openAPI.entity.RestAreaBrand;
 import com.kargobaji.kargobaji.openAPI.entity.RestAreaFacility;
 import com.kargobaji.kargobaji.openAPI.repository.RestAreaBrandRepository;
@@ -94,6 +95,8 @@ public class FavoriteService {
                     .gasolinePrice(restArea.getGasolinePrice())
                     .diselPrice(restArea.getDiselPrice())
                     .lpgPrice(restArea.getLpgPrice())
+                    .electric(restArea.getElectric())
+                    .hydrogen(restArea.getHydrogen())
                     .roadAddress(restArea.getRoadAddress())
                     .phone(restArea.getPhone())
                     .latitude(restArea.getLatitude())
@@ -104,5 +107,18 @@ public class FavoriteService {
                     .foods(foods)
                     .build();
         }).toList();
+    }
+
+    public List<RestAreaIdDto> getFavoriteUserRestAreaId(Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+
+        List<Favorite> favorites = favoriteRepository.findByUserId(userId);
+
+        return favorites.stream()
+                .map(favorite -> RestAreaIdDto.builder()
+                        .restAreaId(favorite.getRestArea().getId())
+                        .build())
+                .toList();
     }
 }

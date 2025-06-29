@@ -1,6 +1,7 @@
 package com.kargobaji.kargobaji.like;
 
 import com.kargobaji.kargobaji.openAPI.dto.RestAreaDetailDto;
+import com.kargobaji.kargobaji.openAPI.dto.RestAreaIdDto;
 import com.kargobaji.kargobaji.openAPI.entity.RestAreaBrand;
 import com.kargobaji.kargobaji.openAPI.entity.RestAreaFacility;
 import com.kargobaji.kargobaji.openAPI.repository.RestAreaBrandRepository;
@@ -63,12 +64,12 @@ public class LikeService {
         return LikeResponse.fromEntity(savedLike, "좋아요 성공");
     }
 
-    public Long countLikeRestArea(Long restAreaId){
-        RestArea restArea = restAreaRepository.findById(restAreaId)
-                .orElseThrow(() -> new IllegalArgumentException("휴게소가 존재하지 않습니다."));
-
-        return likeRepository.countByRestAreaId(restAreaId);
-    }
+//    public Long countLikeRestArea(Long restAreaId){
+//        RestArea restArea = restAreaRepository.findById(restAreaId)
+//                .orElseThrow(() -> new IllegalArgumentException("휴게소가 존재하지 않습니다."));
+//
+//        return likeRepository.countByRestAreaId(restAreaId);
+//    }
 
 
     @Transactional
@@ -107,6 +108,8 @@ public class LikeService {
                     .gasolinePrice(restArea.getGasolinePrice())
                     .diselPrice(restArea.getDiselPrice())
                     .lpgPrice(restArea.getLpgPrice())
+                    .electric(restArea.getElectric())
+                    .hydrogen(restArea.getHydrogen())
                     .roadAddress(restArea.getRoadAddress())
                     .phone(restArea.getPhone())
                     .latitude(restArea.getLatitude())
@@ -117,5 +120,20 @@ public class LikeService {
                     .foods(foods)
                     .build();
         }).toList();
+    }
+
+    @Transactional
+    public List<RestAreaIdDto> getLikeUserRestAreaId(Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
+
+        // 즐겨찾기 목록 조회
+        List<Like> likes = likeRepository.findByUserId(userId);
+
+        return likes.stream()
+                .map(like -> RestAreaIdDto.builder()
+                        .restAreaId(like.getRestArea().getId())
+                        .build())
+                .toList();
     }
 }

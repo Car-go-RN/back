@@ -18,6 +18,8 @@ import java.util.List;
 public class RestAreaDetailDto {
     private Long id;
     private String stdRestNm;
+    private Double reviewAVG;
+
     private String gasolinePrice;
     private String diselPrice;
     private String lpgPrice;

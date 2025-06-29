@@ -1,6 +1,5 @@
 package com.kargobaji.kargobaji.review;
 
-
 import com.kargobaji.kargobaji.loginSignup.domain.User;
 import com.kargobaji.kargobaji.loginSignup.repository.UserRepository;
 import com.kargobaji.kargobaji.openAPI.entity.RestArea;
@@ -45,10 +44,13 @@ public class ReviewService {
 
         Review review = requestDto.toEntity(restArea, user);
         Review saved = reviewRepository.save(review);
+
+        updateReviewAvg(restArea);
+
         return ReviewResponseDto.fromEntity(saved);
     }
 
-    // 휴게소 이름으로 리뷰 조회
+    // 휴게소 ID로 리뷰 목록 조회
     @Transactional
     public ReviewListResponseDto getReviewByRestArea(Long restAreaId) {
         List<Review> reviewList = reviewRepository.findByRestAreaId(restAreaId);
@@ -59,10 +61,9 @@ public class ReviewService {
         return new ReviewListResponseDto(responseDtos.size(), responseDtos);
     }
 
-    // 리뷰 단일 조회
+    // 리뷰 단건 조회
     @Transactional
-    public ReviewResponseDto getReview (Long id){
-
+    public ReviewResponseDto getReview(Long id) {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다."));
         return ReviewResponseDto.fromEntity(review);
@@ -79,7 +80,7 @@ public class ReviewService {
 
     // 리뷰 수정
     @Transactional
-    public ReviewResponseDto editReview(ReviewEditRequestDto reviewEditRequestDto, Long id){
+    public ReviewResponseDto editReview(ReviewEditRequestDto reviewEditRequestDto, Long id) {
         if (reviewEditRequestDto.getUserId() == null) {
             throw new IllegalArgumentException("사용자 ID는 필수입니다.");
         }
@@ -90,8 +91,7 @@ public class ReviewService {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다."));
 
-        Long requestUserId = reviewEditRequestDto.getUserId();
-        if (!review.getUser().getId().equals(requestUserId)) {
+        if (!review.getUser().getId().equals(reviewEditRequestDto.getUserId())) {
             throw new SecurityException("본인의 리뷰만 수정할 수 있습니다.");
         }
 
@@ -100,12 +100,29 @@ public class ReviewService {
         }
 
         reviewEditRequestDto.editToEntity(review);
-        return ReviewResponseDto.fromEntity(review);
+        Review saved = reviewRepository.save(review);
+
+        updateReviewAvg(review.getRestArea());
+
+        return ReviewResponseDto.fromEntity(saved);
     }
 
     // 리뷰 삭제
     @Transactional
-    public void deleteReview(Long id){
+    public void deleteReview(Long id) {
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("리뷰가 존재하지 않습니다."));
+        RestArea restArea = review.getRestArea();
+
         reviewRepository.deleteById(id);
+
+        updateReviewAvg(restArea);
+    }
+
+    // 평균 평점 계산 및 저장
+    private void updateReviewAvg(RestArea restArea) {
+        Double avg = reviewRepository.findAverageGradeByRestAreaId(restArea.getId());
+        restArea.setReviewAVG(avg);
+        restAreaRepository.save(restArea);
     }
 }
