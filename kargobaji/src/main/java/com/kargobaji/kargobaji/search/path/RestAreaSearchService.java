@@ -26,7 +26,7 @@ public class RestAreaSearchService {
     private final DistanceService distanceService;
 
     public List<RestAreaDetailDto> findNearbyRestAreasSortedByDistance(List<double[]> routePoints){
-        double radiusInKm = 0.2;
+        double radiusInKm = 0.35;
 
         List<RestArea> allRestAreas = restAreaRepository.findAll();
         Map<RestArea, Double> restAreaToMinDistance = new HashMap<>();
