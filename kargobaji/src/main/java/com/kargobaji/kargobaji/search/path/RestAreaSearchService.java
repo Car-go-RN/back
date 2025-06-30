@@ -1,5 +1,6 @@
 package com.kargobaji.kargobaji.search.path;
 
+import com.kargobaji.kargobaji.openAPI.config.InvalidRestAreaLocationException;
 import com.kargobaji.kargobaji.openAPI.distance.DistanceService;
 import com.kargobaji.kargobaji.openAPI.dto.RestAreaDetailDto;
 import com.kargobaji.kargobaji.openAPI.entity.RestArea;
@@ -35,6 +36,10 @@ public class RestAreaSearchService {
             double lat = point[1];
 
             for(RestArea restArea : allRestAreas){
+                if(restArea.getLatitude() == null || restArea.getLongitude() == null){
+                    throw new InvalidRestAreaLocationException(restArea.getStdRestNm());
+                }
+
                 double distanceHaversine = calculateDistance(lat, lon, restArea.getLatitude(), restArea.getLongitude());
 
                 if(distanceHaversine <= radiusInKm){
