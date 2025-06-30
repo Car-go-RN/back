@@ -102,7 +102,7 @@ public class RestAreaLocationService {
                 .filter(document -> {
                     String category = document.getCategory_name();
                     return category != null && (
-                            category.contains("고속도로휵소") || category.contains("휴게소")
+                            category.contains("고속도로휴게소") || category.contains("휴게소")
                             );
                 })
                 // 고속도로휴게소 -> 휴게소 정렬 : 고속도로에 있는 휴게소가 아닌 값을 가져올 수 있기 때문에. 우선순위를 둠.

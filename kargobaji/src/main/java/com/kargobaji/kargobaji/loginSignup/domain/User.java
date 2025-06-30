@@ -2,6 +2,7 @@ package com.kargobaji.kargobaji.loginSignup.domain;
 
 import com.kargobaji.kargobaji.favorite.entity.Favorite;
 import com.kargobaji.kargobaji.like.entity.Like;
+import com.kargobaji.kargobaji.recommend.entity.Recommend;
 import com.kargobaji.kargobaji.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,4 +35,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Recommend> recommends = new ArrayList<>();
 }

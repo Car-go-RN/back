@@ -29,7 +29,6 @@ public class AuthController {
     public ResponseEntity<LoginResponseDto> login(@RequestBody LoginRequestDto request) {
         User user = userRepository.findByEmail(request.getEmail())
                         .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다."));
-        String email = user.getEmail();
         Long userId = user.getId();
 
         userService.authenticate(request.getEmail(), request.getPassword());
