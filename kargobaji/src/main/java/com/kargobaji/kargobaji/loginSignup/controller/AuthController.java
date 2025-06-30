@@ -10,6 +10,8 @@ import com.kargobaji.kargobaji.loginSignup.service.PasswordResetService;
 import com.kargobaji.kargobaji.loginSignup.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -46,8 +48,10 @@ public class AuthController {
 
     // 비밀번호 재설정
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
-        passwordResetService.resetPassword(request.getToken(), request.getNewPassword());
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request,
+                                           @AuthenticationPrincipal UserDetails userDetails){
+        String email = userDetails.getUsername();
+        userService.changePassword(email, request.getCurrentPassword(), request.getNewPassword());
         return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
     }
 }
