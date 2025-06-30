@@ -35,12 +35,12 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/auth/login",
-                                "/api/users/register",
-                                "/api/email/**",
-                                "/open-api/**"
-                        ).permitAll()
+//                        .requestMatchers("/api/users/register").permitAll()
+//                        .requestMatchers("/api/auth/login").permitAll()
+//                        .requestMatchers("/api/email/**").permitAll()
+//                        .requestMatchers("/open-api/**").permitAll()
+                                .requestMatchers("/**").permitAll()
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

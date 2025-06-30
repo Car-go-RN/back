@@ -17,6 +17,7 @@ public class ReviewResponseDto {
     private String content;
 
     private int grade;
+    private Double gradeAVG;
 
     private LocalDateTime createTime;
     private LocalDateTime editTime;
@@ -30,6 +31,7 @@ public class ReviewResponseDto {
                 review.getId(),
                 review.getContent(),
                 review.getGrade(),
+                review.getRestArea().getReviewAVG(),
                 review.getCreateTime(),
                 review.getEditTime(),
                 review.getUser().getId(),

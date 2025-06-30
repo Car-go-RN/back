@@ -1,9 +1,10 @@
 package com.kargobaji.kargobaji.search;
 
 import com.kargobaji.kargobaji.openAPI.dto.RestAreaDetailDto;
-import com.kargobaji.kargobaji.search.category.SearchService;
+import com.kargobaji.kargobaji.search.category.CategorySearchService;
 import com.kargobaji.kargobaji.search.path.KakaoRouteManager;
 import com.kargobaji.kargobaji.search.path.RestAreaSearchService;
+import com.kargobaji.kargobaji.search.text.SearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,17 +19,30 @@ import java.util.List;
 @RequestMapping("rest-area/search")
 public class SearchController {
 
-    private final SearchService searchService;
+    private final CategorySearchService categorySearchService;
     private final KakaoRouteManager kakaoRouteManager;
     private final RestAreaSearchService restAreaSearchService;
+    private final SearchService searchService;
 
+    // 텍스트 검색
+    @GetMapping()
+    public ResponseEntity<List<RestAreaDetailDto>> search(@RequestParam("keyword") String keyword,
+                                                            @RequestParam(defaultValue = "1") int page){
+        List<RestAreaDetailDto> result = searchService.searchRestAreas(keyword, page);
+        return ResponseEntity.ok(result);
+    }
+
+    // 카테고리 검색
     @GetMapping("/filter")
     public ResponseEntity<List<RestAreaDetailDto>> filterRestAreas(
             @RequestParam(required = false) List<String> brands,
             @RequestParam(required = false) List<String> facilities,
-            @RequestParam(required = false) List<String> gas
+            @RequestParam(required = false) List<String> gases,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false) Double currentLat,
+            @RequestParam(required = false) Double currentLng
     ) {
-        List<RestAreaDetailDto> result = searchService.getRestAreasByFilter(brands, facilities);
+        List<RestAreaDetailDto> result = categorySearchService.getRestAreasByFilter(brands, facilities, gases, page, currentLat, currentLng);
         return ResponseEntity.ok(result);
     }
 

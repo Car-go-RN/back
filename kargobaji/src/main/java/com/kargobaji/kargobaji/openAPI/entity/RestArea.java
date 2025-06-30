@@ -1,6 +1,6 @@
-    package com.kargobaji.kargobaji.openAPI.entity;
+package com.kargobaji.kargobaji.openAPI.entity;
 
-    import com.kargobaji.kargobaji.favorite.entity.Favorite;
+import com.kargobaji.kargobaji.favorite.entity.Favorite;
     import com.kargobaji.kargobaji.like.entity.Like;
     import com.kargobaji.kargobaji.review.entity.Review;
     import jakarta.persistence.*;
@@ -8,10 +8,10 @@
     import lombok.Builder;
     import lombok.Data;
     import lombok.NoArgsConstructor;
+    import org.hibernate.annotations.ColumnDefault;
 
     import java.util.ArrayList;
     import java.util.List;
-
     @Entity
     @Data
     @AllArgsConstructor
@@ -28,10 +28,17 @@
         private String diselPrice; // 경유
         private String lpgPrice; // LPG
 
+        private String electric;// 전기 충전소 여부
+        private String hydrogen; // 수소 충전소 여부
+
         private String roadAddress;
         private String phone;
         private Double latitude; // 위도 (y)
         private Double longitude; // 경도 (x)
+
+        @ColumnDefault("0.0")
+        @Builder.Default
+        private Double reviewAVG=0.0; // 리뷰 평균 점수
 
         private String restAreaNm; // api에서 가져온 휴게소 이름(대표 이름)
 

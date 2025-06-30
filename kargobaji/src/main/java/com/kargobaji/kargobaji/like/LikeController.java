@@ -2,6 +2,8 @@ package com.kargobaji.kargobaji.like;
 
 import com.kargobaji.kargobaji.like.dto.LikeResponse;
 import com.kargobaji.kargobaji.openAPI.dto.RestAreaDetailDto;
+import com.kargobaji.kargobaji.openAPI.dto.RestAreaIdDto;
+import com.kargobaji.kargobaji.openAPI.entity.RestArea;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,5 +40,11 @@ public class LikeController {
     public ResponseEntity<List<RestAreaDetailDto>> getLikeRestAreas(@PathVariable Long userId){
         List<RestAreaDetailDto> restAreas = likeService.getLikeUser(userId);
         return ResponseEntity.ok(restAreas);
+    }
+
+    @GetMapping("/check/user/{userId}")
+    public ResponseEntity<List<RestAreaIdDto>> getLikeRestAreaId(@PathVariable Long userId){
+        List<RestAreaIdDto> restAreaIdDtos = likeService.getLikeUserRestAreaId(userId);
+        return ResponseEntity.ok(restAreaIdDtos);
     }
 }

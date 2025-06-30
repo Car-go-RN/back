@@ -386,32 +386,31 @@ public class OpenApiManager {
                     .toList();
 
             String distanceStr = null;
+            try{
+                Map<String, Object> distInfo = distanceService.calculateDistance(currentLat, currentLng, restArea.getStdRestNm());
+                Integer distanceKm = (Integer) distInfo.get("distanceKm");
+                double rawKm = distanceKm.doubleValue();
 
-            if(stdRestNm != null & currentLat != null && currentLng != null){
-                try{
-                    Map<String, Object> distInfo = distanceService.calculateDistance(currentLat, currentLng, restArea.getStdRestNm());
-                    Integer distanceKm = (Integer) distInfo.get("distanceKm");
-                    double rawKm = distanceKm.doubleValue();
-
-                    // 1Km 미만은 소수점 1자리, 이상은 정수로 표시
-                    if(rawKm < 1.0){
-                        distanceStr = String.format("%.1fkm", rawKm);
-                    }
-                    else {
-                        distanceStr = String.format("%.0fkm", rawKm);
-                    }
+                if(rawKm < 1.0){
+                    distanceStr = String.format("%.1fkm", rawKm);
                 }
-                catch (Exception e){
-                    throw new RuntimeException("거리 계산 실패: " + e.getMessage());
+                else {
+                    distanceStr = String.format("%.0fkm", rawKm);
                 }
+            }
+            catch (Exception e){
+                throw new RuntimeException("거리 계산 실패 : " + e.getMessage());
             }
 
             return RestAreaDetailDto.builder()
                     .id(restArea.getId())
                     .stdRestNm(restArea.getStdRestNm())
+                    .reviewAVG(restArea.getReviewAVG())
                     .gasolinePrice(restArea.getGasolinePrice())
                     .diselPrice(restArea.getDiselPrice())
                     .lpgPrice(restArea.getLpgPrice())
+                    .electric(restArea.getElectric())
+                    .hydrogen(restArea.getHydrogen())
                     .roadAddress(restArea.getRoadAddress())
                     .phone(restArea.getPhone())
                     .latitude(restArea.getLatitude())
