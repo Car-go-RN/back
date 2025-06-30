@@ -1,9 +1,11 @@
 package com.kargobaji.kargobaji.loginSignup.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class ResetPasswordRequest {
-    private String token;
+    private String currentPassword;
     private String newPassword;
 }

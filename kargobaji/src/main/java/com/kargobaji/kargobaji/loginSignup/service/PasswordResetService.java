@@ -30,6 +30,8 @@ public class PasswordResetService {
         PasswordResetToken resetToken = new PasswordResetToken(token, user, LocalDateTime.now().plusHours(1));
         tokenRepository.save(resetToken);
 
+        // 임시로 이메일 발송 부분 주석처리 (테스트용)
+        /*
         String resetLink = "https://your-frontend.com/reset-password?token=" + token;
 
         SimpleMailMessage message = new SimpleMailMessage();
@@ -37,7 +39,11 @@ public class PasswordResetService {
         message.setSubject("비밀번호 재설정 요청");
         message.setText("다음 링크를 클릭하여 비밀번호를 재설정하세요: \n" + resetLink);
         mailSender.send(message);
-    }
+        */
+
+        // 개발용 로그 (토큰 확인용)
+        System.out.println("Reset token for " + email + ": " + token);
+    } // 이 중괄호가 빠져있었습니다!
 
     public void resetPassword(String token, String newPassword) {
         PasswordResetToken resetToken = tokenRepository.findByToken(token)

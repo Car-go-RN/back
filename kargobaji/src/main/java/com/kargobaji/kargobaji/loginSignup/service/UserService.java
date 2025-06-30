@@ -26,10 +26,23 @@ public class UserService {
     // 로그인 인증
     public void authenticate(String email, String password) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 사용자입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 이메일입니다."));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
+    }
+
+
+    // 비밀번호 변경 (현재 비밀번호 확인 후 새 비밀번호로 변경)
+    public void changePassword(String email, String currentPassword, String newPassword) {
+        User user = userRepository.findByEmail(email).get(); // 예외 처리 생략
+
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }
