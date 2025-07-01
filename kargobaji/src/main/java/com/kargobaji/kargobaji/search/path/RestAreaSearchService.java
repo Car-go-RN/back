@@ -25,7 +25,7 @@ public class RestAreaSearchService {
     private final RestAreaFoodRepository restAreaFoodRepository;
     private final DistanceService distanceService;
 
-    public List<RestAreaDetailDto> findNearbyRestAreasSortedByDistance(List<double[]> routePoints){
+    public List<RestAreaDetailDto> findNearbyRestAreasSortedByDistance(List<double[]> routePoints, int page, int limit){
         double radiusInKm = 0.35;
 
         List<RestArea> allRestAreas = restAreaRepository.findAll();
@@ -61,8 +61,13 @@ public class RestAreaSearchService {
             }
         }
 
+        int offset = Math.max(page, 1) - 1;
+        offset = offset * limit;
+
         return restAreaToMinDistance.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue())
+                .skip(offset)
+                .limit(limit)
                 .map(entry -> toDetailDto(entry.getKey(), formatDistance(entry.getValue())))
                 .toList();
     }

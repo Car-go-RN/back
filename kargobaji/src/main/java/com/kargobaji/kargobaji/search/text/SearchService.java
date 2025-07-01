@@ -9,7 +9,6 @@ import com.kargobaji.kargobaji.openAPI.repository.RestAreaFacilityRepository;
 import com.kargobaji.kargobaji.openAPI.repository.RestAreaFoodRepository;
 import com.kargobaji.kargobaji.openAPI.repository.RestAreaRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,6 +74,4 @@ public class SearchService {
                 })
                 .collect(Collectors.toList());
     }
-
-
 }

@@ -50,13 +50,15 @@ public class SearchController {
     @GetMapping("/path")
     public ResponseEntity<List<RestAreaDetailDto>> getRestAreaAlongRoute(
             @RequestParam double originX, @RequestParam double originY,
-            @RequestParam double destX, @RequestParam double destY
+            @RequestParam double destX, @RequestParam double destY,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "15") int limit
     ){
         // 경로 좌표 조회
         List<double[]> routePoints = kakaoRouteManager.getRoutePoints(originX, originY, destX, destY);
 
         // 각 경로상의 점에서
-        List<RestAreaDetailDto> nearbyRestAreas = restAreaSearchService.findNearbyRestAreasSortedByDistance(routePoints);
+        List<RestAreaDetailDto> nearbyRestAreas = restAreaSearchService.findNearbyRestAreasSortedByDistance(routePoints, page, limit);
 
         return ResponseEntity.ok(nearbyRestAreas);
     }
