@@ -24,15 +24,16 @@ public class SearchController {
     private final RestAreaSearchService restAreaSearchService;
     private final SearchService searchService;
 
-    // 텍스트 검색
+    // 텍스트 검색 ●
+    // http://13.124.148.94:8080/rest-area/search?currentLat=37.572950&currentLng=126.979357&keyword=고성&page=1
     @GetMapping()
-    public ResponseEntity<List<RestAreaDetailDto>> search(@RequestParam("keyword") String keyword,
-                                                            @RequestParam(defaultValue = "1") int page){
+    public ResponseEntity<List<RestAreaDetailDto>> search(@RequestParam("keyword") String keyword, @RequestParam(defaultValue = "1") int page){
         List<RestAreaDetailDto> result = searchService.searchRestAreas(keyword, page);
         return ResponseEntity.ok(result);
     }
 
-    // 카테고리 검색
+    // 카테고리 검색 ●
+    //http://13.124.148.94:8080/rest-area/search/filter?currentLat=37.572950&currentLng=126.979357&brands=CU&facilities=ATM&gases=수소&page=1
     @GetMapping("/filter")
     public ResponseEntity<List<RestAreaDetailDto>> filterRestAreas(
             @RequestParam(required = false) List<String> brands,
@@ -46,7 +47,8 @@ public class SearchController {
         return ResponseEntity.ok(result);
     }
 
-    // 출발지 -> 도착지 경로 중 반경 1km 이내 휴게소 조회 API
+    // 출발지 -> 도착지 경로 중 반경 0.35km 이내 휴게소 조회 API ●
+    // http://13.124.148.94:8080/rest-area/search/path?originX=126.979357&originY=37.572950&destX=129.059210&destY=35.157600&page=2
     @GetMapping("/path")
     public ResponseEntity<List<RestAreaDetailDto>> getRestAreaAlongRoute(
             @RequestParam double originX, @RequestParam double originY,

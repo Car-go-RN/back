@@ -50,7 +50,9 @@ public class OpenApiController {
         return ResponseEntity.ok(result);
     }
 
-    // 휴게소 상세 정보 조회
+    // 휴게소 상세 정보 조회 ●
+    // (다중)http://13.124.148.94:8080/open-api/detail?page=1&stdRestNm&currentLng=128.58506420138215&currentLat=36.30300715240327
+    // (단일)http://13.124.148.94:8080/open-api/detail?page=1&stdRestNm=서산(목포)휴게소&currentLng=128.58506420138215&currentLat=36.30300715240327
     @GetMapping("/detail")
     public ResponseEntity<List<RestAreaDetailDto>> getRestAreaDetail(
             @RequestParam(required = false) String stdRestNm,

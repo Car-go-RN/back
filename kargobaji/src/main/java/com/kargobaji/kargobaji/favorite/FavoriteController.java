@@ -16,7 +16,8 @@ public class FavoriteController {
 
     private final FavoriteService favoriteService;
 
-    // 즐겨찾기 생성/삭제
+    // 즐겨찾기 생성/삭제 ●
+    // http://13.124.148.94:8080/favorites/666?userId=2
     @PostMapping("/{restAreaId}")
     public ResponseEntity<FavoriteResponse> favoriteRestAreaId(
             @PathVariable Long restAreaId,
@@ -26,13 +27,16 @@ public class FavoriteController {
         return ResponseEntity.ok(response);
     }
 
-    // 유저가 즐겨찾기한 휴게소 이름값(stdRestNm) 조회
+    // 유저가 즐겨찾기한 휴게소 조회 ●
+    // http://13.124.148.94:8080/favorites/user/2
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<RestAreaDetailDto>> getFavoriteRestAreas(@PathVariable Long userId){
         List<RestAreaDetailDto> restAreas = favoriteService.getFavoriteUser(userId);
         return ResponseEntity.ok(restAreas);
     }
 
+    // 유저가 즐겨찾기한 휴게소 Id값만 조회 ●
+    // http://13.124.148.94:8080/favorites/check/user/2
     @GetMapping("/check/user/{userId}")
     public ResponseEntity<List<RestAreaIdDto>> getLikeRestAreaId(@PathVariable Long userId){
         List<RestAreaIdDto> restAreaIdDtos = favoriteService.getFavoriteUserRestAreaId(userId);

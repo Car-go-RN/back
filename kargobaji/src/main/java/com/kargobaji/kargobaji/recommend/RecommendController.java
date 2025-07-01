@@ -15,7 +15,16 @@ import java.util.List;
 public class RecommendController {
     private final RecommendService recommendService;
 
-    // 설문조사한 결과 저장
+    // 설문조사한 결과 저장 ●
+    /* http://13.124.148.94:8080/recommend/save/2
+    * {
+            "preferences" : {
+                "gases" : ["전기", "수소"],
+                "facilities" : ["수유실"],
+                "brands" : ["CU", "GS25"]
+            }
+        }
+    * */
     @PostMapping("/save/{userId}")
     public ResponseEntity<List<RecommendResponseDto>> recommendUser(
             @PathVariable Long userId,
@@ -24,6 +33,8 @@ public class RecommendController {
         return recommendService.recommendUser(userId, recommendRequestDtos);
     }
 
+    // 유저의 설문조사에서 선택한 키워드 조회
+    // http://13.124.148.94:8080/recommend/list/2 ●
     @GetMapping("/list/{userId}")
     public ResponseEntity<RecommendSummeryResponseDto> recommendCategoryByUser(@PathVariable Long userId){
         return recommendService.getRecommendationsByUserId(userId);
